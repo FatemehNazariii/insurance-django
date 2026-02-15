@@ -77,7 +77,6 @@ class OrderServiceTests(TestCase):
 
 class PricingApiTests(TestCase):
     def test_calculate_prices_requires_model_id(self):
-        url = reverse("calculate_prices_api")  # اگر name تو urls داری
+        url = reverse("core:calculate_prices_api")
         res = self.client.get(url)
         self.assertEqual(res.status_code, 400)
-
