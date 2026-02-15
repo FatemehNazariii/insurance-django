@@ -2,7 +2,9 @@ from django.test import TestCase
 from core.services.pricing_service import PricingService
 from core.models import User, InsuranceCard, Order, Installment
 from core.services.order_service import OrderService
-
+from django.test import TestCase
+from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 class SimpleTest(TestCase):
     def test_basic(self):
@@ -42,3 +44,40 @@ class OrderServiceTest(TestCase):
         OrderService.generate_installments(order, 6)
 
         self.assertEqual(Installment.objects.filter(order=order).count(), 6)
+        
+
+
+User = get_user_model()
+
+class OrderServiceTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(mobile="09120000000", password="12345678")
+        self.insurance = InsuranceCard.objects.create(
+            title="Test Insurance",
+            slug="test-insurance",
+            insurance_type="third_party",
+        )
+
+    def test_generate_installments_creates_correct_count(self):
+        order = Order.objects.create(user=self.user, insurance=self.insurance, price=6_000_000)
+        OrderService.generate_installments(order, count=6)
+        self.assertEqual(Installment.objects.filter(order=order).count(), 6)
+
+    def test_installments_amount_sum_is_close_to_order_price(self):
+        order = Order.objects.create(user=self.user, insurance=self.insurance, price=6_000_000)
+        OrderService.generate_installments(order, count=6)
+        total = sum(i.amount for i in Installment.objects.filter(order=order))
+        self.assertAlmostEqual(total, order.price, delta=1)
+
+    def test_installments_due_dates_are_increasing(self):
+        order = Order.objects.create(user=self.user, insurance=self.insurance, price=6_000_000)
+        OrderService.generate_installments(order, count=3)
+        dues = list(Installment.objects.filter(order=order).order_by("due_date").values_list("due_date", flat=True))
+        self.assertTrue(dues[0] < dues[1] < dues[2])
+
+class PricingApiTests(TestCase):
+    def test_calculate_prices_requires_model_id(self):
+        url = reverse("calculate_prices_api")  # اگر name تو urls داری
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 400)
+
