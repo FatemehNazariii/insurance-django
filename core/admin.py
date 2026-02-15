@@ -10,12 +10,10 @@ from .models import (
     MotorcycleBrand, MotorcycleModel,
 )
 
-# --- تنظیمات هدر پنل ادمین ---
 admin.site.site_header = "پنل مدیریت بیمه ایمنو"
 admin.site.site_title = "ایمنو"
 admin.site.index_title = "خوش آمدید"
 
-# --- مدیریت کاربران ---
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = ('mobile', 'first_name', 'last_name', 'is_staff', 'is_active')
@@ -29,7 +27,6 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('mobile',)
     ordering = ('mobile',)
 
-# --- اینلاین‌ها ---
 class MenuItemInline(admin.TabularInline):
     model = MenuItem
     extra = 1
@@ -50,7 +47,6 @@ class InstallmentInline(admin.TabularInline):
     readonly_fields = ['amount', 'due_date', 'is_paid']
     can_delete = False
 
-# --- مدیریت شرکت‌های بیمه ---
 @admin.register(InsuranceCompany)
 class InsuranceCompanyAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'display_wealth', 'get_total_sales', 'get_orders_count', 'order']
@@ -59,7 +55,6 @@ class InsuranceCompanyAdmin(admin.ModelAdmin):
     inlines = [InsuranceRateInline]
 
     def get_total_sales(self, obj):
-        # بدنه تابع (یک مرحله تورفتگی بیشتر)
         data = obj.orders.filter(status='paid').aggregate(total=Sum('price'))
         total = data['total'] or 0
         price_string = f"{int(total):,}"
@@ -79,7 +74,6 @@ class InsuranceCompanyAdmin(admin.ModelAdmin):
     
     display_wealth.short_description = "سطح توانگری"
     
-# --- مدیریت سفارشات ---
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
@@ -156,11 +150,9 @@ class MotorcycleModelAdmin(admin.ModelAdmin):
     search_fields = ('name', 'brand__name')
     list_editable = ('base_price',)
 
-# --- اطلاعات بیمه با اسلاگ ---
 @admin.register(InsuranceInfo)
 class InsuranceInfoAdmin(admin.ModelAdmin):
     list_display = ['title', 'slug']
     prepopulated_fields = {'slug': ('title',)}
 
-# ثبت مدل‌های باقی‌مانده
 admin.site.register([Feature, FAQ, TrustStep, DamageStep, Inquiry, DamageReport])

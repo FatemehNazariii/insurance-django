@@ -32,30 +32,22 @@
       font-display: swap;
     }
     body { font-family: 'Vazir', sans-serif; }
-
-    /* مودال‌ها (همون قبلی) */
     #authModal, #damageModal, #inquiryModal, #insuranceModal { display: none !important; }
     .flex#authModal, .flex#damageModal, .flex#inquiryModal, .flex#insuranceModal { display: flex !important; }
-
-    /* اسکرول‌بار لطیف (اختیاری) */
     ::-webkit-scrollbar { width: 10px; }
     ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 999px; }
     ::-webkit-scrollbar-track { background: rgba(0,0,0,.04); }
-
-    /* رینگ فوکوس خوشگل */
     :focus-visible { outline: none; box-shadow: 0 0 0 4px rgba(22,163,74,.18); border-radius: 14px; }
   </style>
 </head>
 
 <body class="bg-gradient-to-b from-emerald-50 via-gray-50 to-white text-gray-800">
-  <!-- بک‌گراند تزئینی -->
   <div class="pointer-events-none fixed inset-0 -z-10">
     <div class="absolute -top-24 right-[-120px] w-[420px] h-[420px] rounded-full bg-emerald-200/35 blur-3xl"></div>
     <div class="absolute top-[220px] left-[-140px] w-[420px] h-[420px] rounded-full bg-lime-200/25 blur-3xl"></div>
   </div>
 
   <nav class="sticky top-0 z-[100]">
-    <!-- نوار شیشه‌ای -->
     <div class="backdrop-blur-xl bg-white/70 border-b border-gray-200/60">
       <div class="container mx-auto px-4 h-20 flex items-center justify-between">
 
@@ -186,10 +178,7 @@
             </li>
           </ul>
         </div>
-
-        <!-- Right side -->
         <div class="flex items-center gap-3">
-          <!-- Mobile menu button -->
           <button
             class="lg:hidden w-11 h-11 rounded-2xl bg-white/80 border border-gray-200/70 shadow-soft
                    flex items-center justify-center hover:bg-white transition"
@@ -341,8 +330,6 @@
     document.addEventListener("DOMContentLoaded", function () {
       const dropdown = document.getElementById('userDropdown');
       if (dropdown) dropdown.style.setProperty('display', 'none', 'important');
-
-      // بستن منوی کاربر با کلیک بیرون
       document.addEventListener('click', function (e) {
         const dd = document.getElementById('userDropdown');
         const btn = document.getElementById('userMenuBtn');
@@ -363,8 +350,6 @@
 
       dropdown.style.setProperty('display', 'block', 'important');
       dropdown.dataset.open = "1";
-
-      // انیمیشن با کلاس‌ها
       dropdown.classList.remove('pointer-events-none', 'opacity-0', 'scale-95');
       dropdown.classList.add('pointer-events-auto', 'opacity-100', 'scale-100');
     }
@@ -376,8 +361,6 @@
       dropdown.dataset.open = "0";
       dropdown.classList.remove('pointer-events-auto', 'opacity-100', 'scale-100');
       dropdown.classList.add('pointer-events-none', 'opacity-0', 'scale-95');
-
-      // بعد از انیمیشن مخفی کن تا کلیک‌ها نره
       setTimeout(() => {
         dropdown.style.setProperty('display', 'none', 'important');
       }, 180);

@@ -72,7 +72,6 @@ def submit_damage(request):
 
 @login_required
 def dashboard(request):
-    # دریافت سفارشات کاربر برای نمایش در پنل شخصی
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     mobile = getattr(request.user, 'mobile', request.user.username)
     orders = Order.objects.filter(user=request.user).prefetch_related('installments').order_by('-created_at')
@@ -93,8 +92,6 @@ def check_user_api(request):
             mobile = data.get('mobile')
             if not mobile:
                 return JsonResponse({'exists': False, 'error': 'شماره وارد نشده'}, status=400)
-            
-            # فیلتر کردن بر اساس فیلد موبایل 
             user_exists = User.objects.filter(mobile=mobile).exists()
             return JsonResponse({'exists': user_exists})
         except Exception as e:
@@ -110,20 +107,14 @@ def auth_user_api(request):
             
             if not mobile or not password:
                 return JsonResponse({'status': 'error', 'message': 'شماره موبایل و رمز عبور اجباری هستند'}, status=400)
-
-            # ۱. تلاش برای ورود
             user = authenticate(request, mobile=mobile, password=password)
             
             if user is not None:
                 login(request, user)
                 return JsonResponse({'status': 'success', 'action': 'login'})
-            
-            # ۲. اگر کاربر وجود نداشت -> ثبت‌نام
             if not User.objects.filter(mobile=mobile).exists():
                 first_name = data.get('first_name', '')
                 last_name = data.get('last_name', '')
-                
-                # ایجاد کاربر جدید با اطمینان از اینکه is_staff و is_superuser حتما False هستند
                 new_user = User.objects.create_user(
                     mobile=mobile,
                     password=password,
@@ -139,7 +130,6 @@ def auth_user_api(request):
                 login(request, new_user)
                 return JsonResponse({'status': 'success', 'action': 'register'})
             else:
-                # اگر کاربر وجود داشت ولی authenticate نشد، یعنی رمز غلط است
                 return JsonResponse({'status': 'error', 'message': 'رمز عبور اشتباه است یا این کاربر دسترسی ندارد'}, status=401)
 
         except Exception as e:
@@ -156,11 +146,8 @@ def user_logout(request):
 @login_required
 def create_order(request, card_slug):
     card = get_object_or_404(InsuranceCard, slug=card_slug)
-    pay_type = request.GET.get('type', 'cash') # دریافت نوع پرداخت از URL
-    
+    pay_type = request.GET.get('type', 'cash') 
     total_price = card.price 
-
-    # ۱. ایجاد سفارش
     order = Order.objects.create(
         user=request.user,
         insurance=card,
@@ -169,8 +156,6 @@ def create_order(request, card_slug):
         status='pending',
         installments_count=4 if pay_type == 'installment' else 0
     )
-
-    # ۲. اگر اقساطی بود، محاسبات را انجام بده
     if pay_type == 'installment':
         installment_amount = total_price / 4
         for i in range(1, 5):
@@ -190,13 +175,9 @@ def order_detail(request, order_id):
 @login_required
 def fake_payment(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
-    
-    # شبیه‌سازی موفقیت پرداخت
     order.is_paid = True
     order.status = 'paid'
     order.save()
-    
-    # اگر اقساط داشته باشد، قسط اول را هم پرداخت شده کن
     first_installment = order.installments.first()
     if first_installment:
         first_installment.is_paid = True
@@ -263,13 +244,10 @@ def company_detail(request, slug):
     context = {'company': company, 'rates': rates}
     return render(request, 'core/company_detail.html', context)
 
-
-# ویوی اصلی برای نمایش صفحه بیمه
 def insurance_form(request):
     brands = CarBrand.objects.all()
     return render(request, 'your_template.html', {'brands': brands})
 
-# API برای گرفتن مدل‌های خودرو بر اساس برند
 def get_models(request):
     brand_id = request.GET.get('brand_id')
     if not brand_id:
@@ -277,8 +255,6 @@ def get_models(request):
     models = CarModel.objects.filter(brand_id=brand_id).values('id', 'name', 'base_price')
     return JsonResponse(list(models), safe=False)
 
-
-# API برای گرفتن مدل‌های موتور بر اساس برند
 def get_motor_models(request):
     brand_id = request.GET.get('brand_id')
     if not brand_id:
@@ -292,30 +268,27 @@ def submit_order(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            
-            # پیدا کردن کارت بیمه بر اساس اسلاگ (به جای .first)
-            # فرض می‌کنیم اسلاگ رو از فرانت می‌فرستی، اگه نه فعلا همون اولی رو بذار با مدیریت خطا
             insurance = InsuranceCard.objects.first()
             if not insurance:
                 return JsonResponse({'status': 'error', 'message': 'هیچ کارت بیمه‌ای یافت نشد'}, status=404)
 
             is_installment = "اقساط" in str(data.get('type'))
-            count = 6  # با فرانت ست کن که ۶ ماهه باشه یا ۴ ماهه
+            count = 4  
 
             order = Order.objects.create(
                 user=request.user,
                 insurance=insurance,
-                price=int(data.get('price', 0)), # تبدیل به عدد صحیح
+                price=int(data.get('price', 0)),
                 company_name=data.get('company'),
                 plate_number=data.get('plate'),
                 payment_type='installment' if is_installment else 'cash',
                 installments_count=count if is_installment else 0,
-                is_paid=True, # بعدا که درگاه وصل کردی این باید False باشه تا وقتی برگرده
+                is_paid=True, 
                 status='paid'
             )
 
             if is_installment:
-                amount_per_installment = order.price // count # تقسیم عدد صحیح
+                amount_per_installment = order.price // count
                 for i in range(1, count + 1):
                     Installment.objects.create(
                         order=order,

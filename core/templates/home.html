@@ -656,10 +656,9 @@ shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
         }
     }
 
-    // ۴. توابع باز و بسته کردن مودال احراز هویت
    function openAuthModal() {
     const modal = document.getElementById('authModal');
-    modal.classList.replace('hidden', 'flex'); // جایگزینی هوشمند
+    modal.classList.replace('hidden', 'flex'); 
 }
 
     function closeAuthModal() {
@@ -670,19 +669,10 @@ shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
     const mobile = document.getElementById('userMobile').value;
     
     if(mobile.length === 11) {
-        // ایجاد یک کد ۵ رقمی فیک
         const fakeOtp = Math.floor(10000 + Math.random() * 90000);
-        
-        // ذخیره کد در یک متغیر سراسری یا در حافظه مرورگر برای مرحله بعد
         window.currentOtp = fakeOtp;
-
-        // چاپ کد در کنسول برای اینکه خودت ببینی و وارد کنی
         console.log("%c [ایمنو تِست] کد تایید شما: " + fakeOtp, "color: white; background: green; font-size: 20px; padding: 10px;");
-        
-        // شبیه‌سازی لودینگ کوتاه
         alert("کد تایید (فیک) به کنسول مرورگر ارسال شد. (F12 را بزنید)");
-
-        // رفتن به مرحله بعد
         document.getElementById('displayMobile').innerText = mobile;
         document.getElementById('phoneStep').classList.add('hidden');
         document.getElementById('otpStep').classList.remove('hidden');
@@ -697,18 +687,15 @@ function backToPhone() {
 }
 
 function verifyAndSubmit() {
-    // اینجا در آینده کد اتصال به بک‌اند را می‌نویسیم
     alert('درخواست شما با موفقیت ثبت شد!');
     closeAuthModal();
 }
 
-// باز و بسته کردن دراپ‌دان منوی کاربری
 function toggleUserMenu() {
     const dropdown = document.getElementById('userDropdown');
     if (dropdown) dropdown.classList.toggle('hidden');
 }
 
-// مرحله ۱: چک کردن شماره در دیتابیس
 async function checkUserStatus() {
     const mobile = document.getElementById('userMobile').value;
     if (mobile.length !== 11) {
@@ -728,10 +715,8 @@ async function checkUserStatus() {
         const data = await response.json();
 
         if (data.exists) {
-            // کاربر وجود دارد -> فقط مرحله ورود (رمز عبور) را نشان بده
             showLoginStep(mobile);
         } else {
-            // کاربر جدید -> فرم ثبت‌نام را نشان بده
             showRegisterStep(mobile);
         }
     } catch (e) {
@@ -742,11 +727,9 @@ async function checkUserStatus() {
 function showRegisterStep(mobile) {
     document.getElementById('phoneStep').classList.add('hidden');
     document.getElementById('registerStep').classList.remove('hidden');
-    // ذخیره شماره در یک فیلد مخفی یا متغیر برای ارسال نهایی
     window.tempMobile = mobile;
 }
 
-// این تابع اطلاعات ثبت‌نام را به جنگو می‌فرستد
 async function submitRegistration() {
     const firstName = document.getElementById('regFirstName').value;
     const lastName = document.getElementById('regLastName').value;
@@ -759,7 +742,7 @@ async function submitRegistration() {
     }
 
     try {
-        const response = await fetch('/api/auth-user/', { // از آدرس جامع استفاده می‌کنیم
+        const response = await fetch('/api/auth-user/', { 
             method: 'POST',
             headers: {
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
@@ -770,14 +753,13 @@ async function submitRegistration() {
                 first_name: firstName,
                 last_name: lastName,
                 password: password,
-                action: 'register' // اضافه کردن اکشن برای شفافیت
+                action: 'register'
             })
         });
 
         const data = await response.json();
 
         if (data.status === 'success') {
-            // به جای رفرش، به داشبورد برو
             window.location.href = "/dashboard/"; 
         } else {
             alert(data.message || "خطا در ثبت‌نام");
@@ -798,14 +780,11 @@ function showLoginStep(mobile) {
     }
     window.tempMobile = mobile;
 }
-
-// تابع جامع برای ارسال اطلاعات به بک‌اِند (چه ورود و چه ثبت‌نام)
 async function submitAuth(type) {
     let payload = { mobile: window.tempMobile };
     let apiUrl = '/api/auth-user/';
 
     if (type === 'register') {
-        // ... (منطق گرفتن فیلدها مشابه بالا)
         payload.first_name = document.getElementById('regFirstName').value;
         payload.last_name = document.getElementById('regLastName').value;
         payload.password = document.getElementById('regPassword').value;
@@ -826,7 +805,6 @@ async function submitAuth(type) {
         const data = await response.json();
 
         if (data.status === 'success') {
-            // هدایت مستقیم به داشبورد
             window.location.href = "/dashboard/"; 
         } else {
             alert(data.message || "رمز عبور اشتباه است یا خطایی رخ داده.");
@@ -837,7 +815,6 @@ async function submitAuth(type) {
     }
 }
 
-// بستن دراپ‌دان کاربر با کلیک روی فضای خالی صفحه
 window.addEventListener('click', function(e) {
     const dropdown = document.getElementById('userDropdown');
     const userBtn = document.querySelector('button[onclick="toggleUserMenu()"]');
@@ -845,7 +822,6 @@ window.addEventListener('click', function(e) {
         dropdown.classList.add('hidden');
     }
 });
-// توابع باز و بسته کردن مودال مشاوره
 function openInquiryModal() {
     const modal = document.getElementById('inquiryModal');
     if(modal) {
@@ -862,7 +838,6 @@ function closeInquiryModal() {
     }
 }
 
-// توابع باز و بسته کردن مودال اعلام خسارت
 function openDamageModal() {
     const modal = document.getElementById('damageModal');
     if(modal) {
@@ -879,7 +854,6 @@ function closeDamageModal() {
     }
 }
 
-// بستن مودال‌ها با کلیک روی فضای خارج از پنجره
 window.onclick = function(event) {
     const inquiryModal = document.getElementById('inquiryModal');
     const damageModal = document.getElementById('damageModal');

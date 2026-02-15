@@ -3,13 +3,11 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager 
 
 
-# --- مدیریت کاربران ---
 class UserManager(BaseUserManager):
     def create_user(self, mobile, password=None, **extra_fields):
         if not mobile:
             raise ValueError('شماره موبایل اجباری است')
         
-        # کاربران عادی نباید دسترسی ادمین داشته باشند
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
         
@@ -42,7 +40,6 @@ class User(AbstractUser):
     def __str__(self):
         return self.mobile
     
-# --- کارت‌های بیمه) ---
 class InsuranceCard(models.Model):
     CATEGORY_CHOICES = [
         ('insurance', 'بیمه'),
@@ -68,7 +65,6 @@ class InsuranceCard(models.Model):
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
     is_active = models.BooleanField(default=True, verbose_name="فعال/غیرفعال")
 
-    # فیلدهای سئو
     meta_title = models.CharField(max_length=200, blank=True, null=True, verbose_name="عنوان سئو")
     meta_description = models.TextField(blank=True, null=True, verbose_name="توضیحات سئو")
 
@@ -80,8 +76,6 @@ class InsuranceCard(models.Model):
     def __str__(self):
         return self.title
 
-
-# --- منوی اصلی سایت ---
 class MenuCategory(models.Model):
     name = models.CharField(max_length=100, verbose_name="نام دسته")
     icon_class = models.CharField(max_length=50, default="fa-circle", verbose_name="کلاس آیکون")
@@ -101,7 +95,6 @@ class MenuItem(models.Model):
     slug = models.SlugField(max_length=120, unique=True, allow_unicode=True, verbose_name="نشانی صفحه (Slug)", blank=True, null=True)
     description = models.TextField(verbose_name="توضیحات صفحه", blank=True)
     
-    # اتصال به کارت بیمه: اگر پر شود همان صفحه بیمه نمایش داده می‌شود
     insurance_card = models.ForeignKey(
         InsuranceCard, 
         on_delete=models.SET_NULL, 
@@ -120,14 +113,11 @@ class MenuItem(models.Model):
     def __str__(self):
         return self.title
 
-# --- مراحل خسارت و شرکت‌ها ---
-
 class InsuranceCompany(models.Model):
     name = models.CharField(max_length=100, verbose_name="نام شرکت")
     slug = models.SlugField(max_length=120, unique=True, allow_unicode=True, verbose_name="نشانی (Slug)", blank=True, null=True)
     logo = models.ImageField(upload_to='companies/', verbose_name="لوگو")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
-    # فیلدهای جدید برای واقعی‌تر شدن
     wealth_level = models.IntegerField(default=1, verbose_name="سطح توانگری")
     complaint_response_rate = models.IntegerField(default=100, verbose_name="درصد پاسخگویی به شکایات")
 
@@ -165,7 +155,6 @@ class DamageStep(models.Model):
     def __str__(self):
         return f"{self.number}. {self.title}"
 
-# --- فرم‌ها و محتوا ---
 class Inquiry(models.Model):
     phone_number = models.CharField(max_length=15, verbose_name="شماره تماس") 
     insurance_type = models.CharField(max_length=100, default='مشاوره کلی', verbose_name="نوع مشاوره")
