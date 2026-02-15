@@ -1,34 +1,38 @@
 # 🛡 Insurance Pricing & Order Management System
 
-A Django-based web application for insurance comparison, dynamic pricing, and order management with installment support.
+A production-ready Django backend application for insurance comparison, dynamic pricing calculation, and installment-based order management.
+
+This project demonstrates clean architecture, service-layer design, Dockerized deployment, PostgreSQL integration, automated testing, and CI configuration.
 
 ---
 
 ## 🚀 Features
 
-- 🔎 Compare insurance companies based on dynamic pricing
+- 🔎 Compare insurance companies with dynamic pricing
 - 💰 Pricing engine based on:
   - Vehicle base value
   - Vehicle production year
   - Company-specific coefficients
-- 💳 Cash & installment payments
+- 💳 Cash & installment payment calculation
 - 📅 Automatic installment schedule generation
-- 👤 Custom user authentication (mobile-based)
+- 👤 Custom user authentication (mobile-based login)
 - 📊 User dashboard with order tracking
-- 🧪 Unit tests for pricing and order logic
-- 🐳 Dockerized with PostgreSQL
+- 🧪 Unit tests for pricing & installment logic
+- 🐳 Dockerized application with PostgreSQL
+- 🔁 GitHub Actions CI (automated test execution)
 
 ---
 
 ## 🏗 Architecture
 
-- Django MTV architecture
-- Service Layer pattern:
-  - `PricingService`
-  - `OrderService`
-- Environment-based configuration
-- PostgreSQL inside Docker
-- SQLite fallback for local development
+This project follows Django MTV architecture with a Service Layer pattern:
+
+
+### Service Layer
+- `PricingService` → Handles all pricing calculations
+- `OrderService` → Handles installment generation & scheduling
+
+Business logic is completely separated from views to improve maintainability and testability.
 
 ---
 
@@ -39,7 +43,7 @@ A Django-based web application for insurance comparison, dynamic pricing, and or
 - PostgreSQL
 - Docker & Docker Compose
 - psycopg
-- Git
+- Git & GitHub Actions
 
 ---
 
@@ -47,106 +51,31 @@ A Django-based web application for insurance comparison, dynamic pricing, and or
 
 ```bash
 python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\activate   # Windows
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
-```
+
 
 ---
 
-## 🐳 Run with Docker (PostgreSQL)
+## 📸 Screenshots
 
-### 1️⃣ Build & Start
-
-```bash
-docker compose up --build
-```
-
-### 2️⃣ Run migrations
-
-```bash
-docker compose exec web python manage.py migrate
-```
-
-### 3️⃣ Create superuser
-
-```bash
-docker compose exec web python manage.py createsuperuser
-```
-
-Then open:
-
-```
-http://localhost:8000
-```
+### 🏠 Home Page
+![Home Page](screenshots/1.png)
 
 ---
 
-## 🧪 Run Tests
-
-```bash
-python manage.py test core
-```
-
-Or inside Docker:
-
-```bash
-docker compose exec web python manage.py test core
-```
+### 💰 Pricing Calculation
+![Pricing Result](screenshots/3.png)
+![Pricing Result](screenshots/2.png)
 
 ---
 
-## 📂 Project Structure
-
-```
-core/
- ├── models.py
- ├── views.py
- ├── services/
- │    ├── pricing_service.py
- │    └── order_service.py
- ├── tests.py
-imeno/
- ├── settings.py
-docker-compose.yml
-Dockerfile
-```
+### 👤 User Dashboard
+![Dashboard](screenshots/4.png)
 
 ---
 
-## 🔐 Environment Variables
-
-Create a `.env` file:
-
-```
-DEBUG=1
-SECRET_KEY=your-secret-key
-POSTGRES_DB=imeno
-POSTGRES_USER=imeno
-POSTGRES_PASSWORD=your-password
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-```
-
----
-
-## 📈 What This Project Demonstrates
-
-- Clean separation of concerns (views vs services)
-- Business logic abstraction
-- Dockerized deployment
-- PostgreSQL configuration
-- Testable architecture
-- Environment-based settings
-- REST-style API endpoints
-
----
-
-## 📌 Resume Highlights
-
-- Designed and implemented a dynamic insurance pricing engine.
-- Refactored business logic into service layer to improve maintainability.
-- Dockerized application with PostgreSQL using Docker Compose.
-- Implemented unit tests for pricing and installment logic.
-- Built custom authentication flow with mobile-based login.
+### 🛠 Admin Panel
+![Admin Panel](screenshots/5png)
