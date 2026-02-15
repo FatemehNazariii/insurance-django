@@ -2,6 +2,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Iterable, List, Optional
 
+from core.constants import (
+    DEFAULT_INSTALLMENT_MONTHS,
+    INSTALLMENT_MARKUP,
+    AGE_FACTOR_PER_YEAR,
+)
+
 @dataclass
 class Quote:
     company_id: int
@@ -15,7 +21,6 @@ class Quote:
 class PricingService:
     @staticmethod
     def _current_year_fallback() -> int:
-        # اگر سال شمسی می‌خوای، بعداً جدا درستش می‌کنیم
         return datetime.now().year
 
     @classmethod
@@ -25,18 +30,15 @@ class PricingService:
         base_price_toman: float,
         production_year: int,
         rates: Iterable,
-        installment_months: int = 6,
-        installment_markup: float = 0.05,
+        installment_months: int = DEFAULT_INSTALLMENT_MONTHS,
+        installment_markup: float = INSTALLMENT_MARKUP,
         current_year: Optional[int] = None,
     ) -> List[Quote]:
-        """
-        rates: لیستی از InsuranceRate ها (هر rate به company وصل است)
-        """
         if current_year is None:
             current_year = cls._current_year_fallback()
 
         age_years = max(0, current_year - production_year)
-        age_factor = age_years * 0.01
+        age_factor = age_years * AGE_FACTOR_PER_YEAR
 
         quotes: List[Quote] = []
         for rate in rates:
