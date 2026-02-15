@@ -10,6 +10,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import F
 from core.services.pricing_service import PricingService
+from core.services.order_service import OrderService
 
 
 User = get_user_model()
@@ -145,27 +146,8 @@ def user_logout(request):
 
 @login_required
 def create_order(request, card_slug):
-    card = get_object_or_404(InsuranceCard, slug=card_slug)
-    pay_type = request.GET.get('type', 'cash') 
-    total_price = card.price 
-    order = Order.objects.create(
-        user=request.user,
-        insurance=card,
-        price=total_price,
-        payment_type=pay_type,
-        status='pending',
-        installments_count=4 if pay_type == 'installment' else 0
-    )
-    if pay_type == 'installment':
-        installment_amount = total_price / 4
-        for i in range(1, 5):
-            Installment.objects.create(
-                order=order,
-                amount=installment_amount,
-                due_date=timezone.now().date() + timedelta(days=30*i)
-            )
-
-    return redirect('core:order_detail', order_id=order.id)
+    DEFAULT_INSTALLMENTS = 6
+    OrderService.generate_installments(order, DEFAULT_INSTALLMENTS)
 
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
@@ -302,35 +284,40 @@ def submit_order(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 def calculate_prices_api(request):
-    model_id = request.GET.get('model_id')
-    year = int(request.GET.get('year', 1404))
-    is_motor = request.GET.get('vehicle') == 'motor'
+    model_id = request.GET.get("model_id")
+    year = int(request.GET.get("year", 1404))
+    vehicle = request.GET.get("vehicle", "") 
+    insurance_type = request.GET.get("type", "third_party")  
 
     if not model_id:
-        return JsonResponse({'results': [], 'message': 'مدل انتخاب نشده است'}, status=400)
+        return JsonResponse({"error": "model_id is required"}, status=400)
+    if vehicle == "motor":
+        model = MotorcycleModel.objects.filter(id=model_id).first()
+    else:
+        model = CarModel.objects.filter(id=model_id).first()
 
-    try:
-        if is_motor:
-            vehicle_model = MotorcycleModel.objects.get(id=model_id)
-        else:
-            vehicle_model = CarModel.objects.get(id=model_id)
-        ins_type = request.GET.get('type', 'body')
-        rates = InsuranceRate.objects.filter(insurance_type=ins_type).select_related('company')
+    if not model:
+        return JsonResponse({"error": "model not found"}, status=404)
 
-        results = []
-        for rate in rates:
-            base_toman = vehicle_model.base_price / 10
-            from datetime import datetime
-            current_year = datetime.now().year  
-            age_factor = (current_year - year)
-            final_price = (base_toman * (1 + age_factor)) * float(rate.car_value_coefficient) + float(rate.base_fee)
-            results.append({
-                'company_name': rate.company.name,
-                'company_logo': rate.company.logo.url if rate.company.logo else '',
-                'wealth_level': rate.company.wealth_level,
-                'final_price': int(final_price),
-                'installment_price': int((final_price * 1.05) / 6),
-            })
-        return JsonResponse({'results': results})
-    except (CarModel.DoesNotExist, MotorcycleModel.DoesNotExist):
-        return JsonResponse({'results': [], 'message': 'مدل یافت نشد'}, status=404)
+    base_toman = float(model.base_price) / 10
+    rates = InsuranceRate.objects.select_related("company").filter(insurance_type=insurance_type)
+    quotes = PricingService.calculate_quotes(
+        base_price_toman=base_toman,
+        production_year=year,
+        rates=rates,
+        installment_months=6,
+        installment_markup=0.05,
+    )
+    companies = []
+    for q in quotes:
+        companies.append({
+            "company_id": q.company_id,
+            "company_name": q.company_name,
+            "company_logo": q.company_logo_url,
+            "wealth_level": q.wealth_level,
+            "cash_price": q.cash_price,
+            "installment_total_price": q.installment_total_price,
+            "monthly_payment": q.monthly_payment,
+        })
+
+    return JsonResponse({"companies": companies})

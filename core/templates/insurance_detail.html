@@ -78,11 +78,8 @@
     <label class="text-gray-500 font-bold text-sm">شماره پلاک {{ vehicle_label }}</label>
     
     {% if is_motorcycle %}
-    <!-- پلاک موتور: مطابق پلاک واقعی ایران — نوار آبی با پرچم و I.R. IRAN، دو ردیف اعداد درشت روی سفید -->
     <div class="inline-flex flex-row-reverse rounded-md overflow-hidden border-2 border-black bg-white shadow-lg" style="width: 260px;">
-        <!-- نوار آبی سمت چپ با پرچم و متن -->
         <div class="flex flex-col items-center justify-start bg-[#003399] text-white flex-shrink-0 w-12 py-1 px-0.5">
-            <!-- پرچم ایران (سه نوار سبز، سفید، قرمز) -->
             <div class="flex flex-col rounded-sm overflow-hidden mb-1.5 w-5 border border-white/40">
                 <div class="h-0.5 bg-green-500"></div>
                 <div class="h-0.5 bg-white"></div>
@@ -91,15 +88,12 @@
             <span class="text-[7px] font-bold leading-tight">I.R.</span>
             <span class="text-[6px] font-bold leading-tight">IRAN</span>
         </div>
-        <!-- بخش سفید: ردیف بالا ۳ رقم، ردیف پایین ۵ کاراکتر -->
         <div class="flex flex-col flex-1 bg-white min-w-0">
-            <!-- ردیف بالا: کد منطقه (۳ رقم) -->
             <div class="flex flex-row-reverse justify-center items-center border-b border-gray-200 bg-white py-1.5 px-2" style="min-height: 38px;">
                 <input type="number" id="plate-city" placeholder="۱۲۳" maxlength="3"
                     class="w-16 text-center text-xl font-black text-black outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     dir="ltr">
             </div>
-            <!-- ردیف پایین: فقط ۵ رقم (بدون حرف) -->
             <div class="flex flex-row-reverse justify-center items-center gap-1 py-1.5 px-2" style="min-height: 42px;">
                 <input type="number" id="plate-part2" placeholder="۵۵" maxlength="2"
                     class="w-9 text-center text-xl font-black text-black outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -107,7 +101,6 @@
                 <input type="number" id="plate-part1" placeholder="۱۲۳" maxlength="3"
                     class="w-12 text-center text-xl font-black text-black outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     dir="ltr">
-                <!-- حرف برای موتور استفاده نمی‌شود؛ مخفی نگه می‌داریم تا JS خطا ندهد -->
                 <select id="plate-char" class="hidden" aria-hidden="true" tabindex="-1">
                     <option value="" selected></option>
                 </select>
@@ -115,7 +108,6 @@
         </div>
     </div>
     {% else %}
-    <!-- پلاک خودرو -->
     <div class="flex flex-row-reverse items-center bg-white border border-gray-300 rounded-2xl overflow-hidden shadow-sm" style="width: 300px; height: 65px;">
         <div class="bg-[#003399] w-12 h-full flex flex-col items-center justify-center text-white">
             <div class="w-6 h-4 bg-white/20 rounded-sm mb-1 border border-white/30"></div>
@@ -380,23 +372,17 @@ function updateInsurancePrices() {
         alert('لطفاً ابتدا مدل {{ vehicle_label }} و سال ساخت را انتخاب کنید.');
         return;
     }
-
-    // ۱. رفتن به مرحله "تایید شد"
     goToStep(3);
-    
-    // ۲. نمایش حالت در حال بارگذاری در لیست سمت راست
-    insuranceList.innerHTML = `
+        insuranceList.innerHTML = `
         <div class="text-center py-10 animate-pulse">
             <i class="fa-solid fa-calculator text-blue-500 text-3xl mb-2"></i>
             <p class="text-xs text-blue-500 font-bold">در حال استعلام قیمت واقعی از شرکت‌ها...</p>
         </div>`;
 
-    // ۳. ارسال درخواست به جنگو برای محاسبه قیمت بر اساس دیتابیس
-    // نکته: آدرس /api/calculate-prices/ را باید در urls.py بسازی
     fetch(`/api/calculate-prices/?model_id=${modelId}&year=${yearSelect}`)
         .then(response => response.json())
         .then(data => {
-            insuranceList.innerHTML = ''; // خالی کردن لیست برای دیتای جدید
+            insuranceList.innerHTML = ''; 
 
             if (data.results.length === 0) {
                 insuranceList.innerHTML = '<p class="text-center text-gray-400 text-xs">نرخی یافت نشد.</p>';
@@ -404,7 +390,6 @@ function updateInsurancePrices() {
             }
 
             data.results.forEach((item, index) => {
-                // ساختن کارت‌ها بر اساس اطلاعات دیتابیس
                 insuranceList.innerHTML += `
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 space-y-4 mb-4 relative overflow-hidden">
                     ${index === 0 ? '<span class="absolute top-0 left-0 bg-green-500 text-white text-[8px] px-3 py-1 rounded-br-2xl">بهترین قیمت</span>' : ''}
@@ -460,7 +445,6 @@ function validateInformation() {
     goToStep(2);
 }
 
-// پر کردن سال‌ها
 const yearSel = document.getElementById('year-select');
 if(yearSel) {
     for (let year = 1404; year >= 1370; year--) {
@@ -470,10 +454,9 @@ if(yearSel) {
     }
 }
 function finalOrder(company, price, type) {
-    // ۱. گرفتن اطلاعات با احتیاط (Optional Chaining یا چک کردن وجود)
     const nationalIdEl = document.getElementById('national-id');
     const p1El = document.getElementById('plate-part1');
-    const p2El = document.getElementById('plate-part2'); // چک کن پارت ۲ هست یا ۳
+    const p2El = document.getElementById('plate-part2'); 
     const pCharEl = document.getElementById('plate-char');
     const pCityEl = document.getElementById('plate-city');
 
@@ -482,8 +465,6 @@ function finalOrder(company, price, type) {
     const p2 = p2El ? p2El.value : '';
     const pChar = pCharEl ? pCharEl.value : '';
     const pCity = pCityEl ? pCityEl.value : '';
-    
-    // ۲. پر کردن خلاصه در مرحله چهارم
     const summaryId = document.getElementById('summary-id');
     const summaryPlate = document.getElementById('summary-plate');
     const summaryCompany = document.getElementById('summary-company');
@@ -496,18 +477,12 @@ function finalOrder(company, price, type) {
     if (summaryType) summaryType.innerText = type;
     if (summaryPrice) summaryPrice.innerText = price.toLocaleString() + ' تومان';
 
-    // ۳. رفتن به مرحله آخر
     goToStep(4);
 }
 
 function confirmAndPay() {
-    // ۱. نمایش پیام برای اطمینان از شروع فرآیند
     console.log("شروع فرآیند ثبت سفارش...");
-
-    // ۲. گرفتن توکن امنیتی جنگو
     const csrftoken = getCookie('csrftoken');
-
-    // ۳. جمع‌آوری اطلاعات از صفحه (مطمئن شو این IDها در HTML وجود دارند)
     const priceElement = document.getElementById('summary-price');
     const companyElement = document.getElementById('summary-company');
     const plateElement = document.getElementById('summary-plate');
@@ -524,8 +499,6 @@ function confirmAndPay() {
         type: typeElement ? typeElement.innerText : 'نقدی',
         plate: plateElement ? plateElement.innerText : '---',
     };
-
-    // ۴. ارسال درخواست به سمت ویو Django
     fetch('/api/submit-order/', {
         method: 'POST',
         headers: {
@@ -538,7 +511,7 @@ function confirmAndPay() {
     .then(data => {
         if (data.status === 'success') {
             alert('بیمه شما با موفقیت صادر شد!');
-            window.location.href = '/dashboard/'; // هدایت به پنل کاربری
+            window.location.href = '/dashboard/'; 
         } else {
             alert('خطا در ثبت: ' + data.message);
         }
@@ -548,8 +521,6 @@ function confirmAndPay() {
         alert('ارتباط با سرور برقرار نشد.');
     });
 }
-
-// این تابع برای گرفتن CSRF Token الزامی است
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
