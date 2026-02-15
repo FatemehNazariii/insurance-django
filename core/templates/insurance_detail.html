@@ -1,0 +1,570 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="bg-[#fcfcfc] min-h-screen" dir="rtl">
+    <div class="max-w-[1200px] mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-4 xl:gap-6 items-start justify-center">
+            
+            <div class="w-full lg:w-[520px] xl:w-[560px] bg-[#f8faff] p-6 rounded-[2.5rem] border border-green-50 order-2 lg:order-1">
+                <div class="flex items-center justify-between mb-6 flex-row">
+                    <h3 class="font-black text-gray-800 text-sm">نتایج محاسبه قیمت</h3>
+                    <span class="bg-green-100 text-green-600 text-[9px] px-3 py-1 rounded-full font-bold">بروزرسانی لحظه‌ای</span>
+                </div>
+<div id="insurance-list"
+     class="space-y-2 max-h-[calc(100vh-240px)] overflow-y-auto pr-1">
+
+  {% for rate in rates %}
+  <div onclick="selectInsuranceCompany('{{ rate.company.name }}', '{{ rate.price_toman|floatformat:0 }}')" 
+       class="bg-white p-3 rounded-xl border border-gray-100
+              hover:border-emerald-400 hover:shadow-md
+              transition-all cursor-pointer relative">
+
+    {% if forloop.first %}
+    <span class="absolute -top-0 right-3 bg-emerald-500 text-white
+                 text-[9px] px-2 py-0.5 rounded-md shadow-sm z-10">
+      ارزان‌ترین
+    </span>
+    {% endif %}
+
+    <div class="flex items-center justify-between gap-2">
+      <!-- Left -->
+      <div class="flex items-center gap-2 min-w-0">
+        {% if rate.company.logo %}
+          <img src="{{ rate.company.logo.url }}"
+               class="w-8 h-8 object-contain flex-shrink-0">
+        {% endif %}
+        <div class="min-w-0">
+          <h4 class="font-bold text-gray-800 text-[12px] truncate">
+            {{ rate.company.name }}
+          </h4>
+          <span class="text-[9px] text-gray-400">
+            توانگری: {{ rate.company.wealth_level }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="text-left flex-shrink-0">
+        <p class="text-emerald-600 font-black text-[13px] leading-none">
+          {{ rate.price_toman|floatformat:0|intcomma }}
+        </p>
+        <p class="text-[9px] text-gray-400 mt-0.5">
+          پاسخگویی {{ rate.company.complaint_response_rate }}٪
+        </p>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="bg-white p-6 rounded-xl border border-dashed border-gray-200 text-center">
+    <p class="text-gray-400 text-[11px]">نرخی برای این بیمه تعریف نشده است.</p>
+  </div>
+  {% endfor %}
+</div>
+
+            </div>
+            <div class="w-full lg:w-[520px] xl:w-[560px] bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-50 min-h-[550px] order-1 lg:order-2">
+                <div id="step-container">
+                    <div id="step-1" class="step-content text-right">
+                        <h2 class="text-xl font-black text-gray-800 mb-6">ورود اطلاعات {{ vehicle_label }}</h2>
+                        <div class="relative mb-6">
+                            <input type="text" id="national-id" maxlength="10" class="w-full p-4 border border-gray-100 bg-gray-50 rounded-2xl outline-none focus:bg-white focus:border-green-400 transition-all text-center tracking-[0.5em] font-bold" placeholder="----------">
+                            <label class="absolute -top-2 right-4 bg-white px-2 text-[10px] text-gray-400">کد ملی مالک</label>
+                            <i class="fa-solid fa-id-card absolute left-4 top-5 text-gray-300"></i>
+                        </div>
+                        <p class="text-[11px] text-gray-500 mb-3 mr-2">شماره پلاک {{ vehicle_label }}:</p>
+                        <div class="flex flex-col items-center gap-4 mb-8">
+    <label class="text-gray-500 font-bold text-sm">شماره پلاک {{ vehicle_label }}</label>
+    
+    {% if is_motorcycle %}
+    <!-- پلاک موتور: مطابق پلاک واقعی ایران — نوار آبی با پرچم و I.R. IRAN، دو ردیف اعداد درشت روی سفید -->
+    <div class="inline-flex flex-row-reverse rounded-md overflow-hidden border-2 border-black bg-white shadow-lg" style="width: 260px;">
+        <!-- نوار آبی سمت چپ با پرچم و متن -->
+        <div class="flex flex-col items-center justify-start bg-[#003399] text-white flex-shrink-0 w-12 py-1 px-0.5">
+            <!-- پرچم ایران (سه نوار سبز، سفید، قرمز) -->
+            <div class="flex flex-col rounded-sm overflow-hidden mb-1.5 w-5 border border-white/40">
+                <div class="h-0.5 bg-green-500"></div>
+                <div class="h-0.5 bg-white"></div>
+                <div class="h-0.5 bg-red-600"></div>
+            </div>
+            <span class="text-[7px] font-bold leading-tight">I.R.</span>
+            <span class="text-[6px] font-bold leading-tight">IRAN</span>
+        </div>
+        <!-- بخش سفید: ردیف بالا ۳ رقم، ردیف پایین ۵ کاراکتر -->
+        <div class="flex flex-col flex-1 bg-white min-w-0">
+            <!-- ردیف بالا: کد منطقه (۳ رقم) -->
+            <div class="flex flex-row-reverse justify-center items-center border-b border-gray-200 bg-white py-1.5 px-2" style="min-height: 38px;">
+                <input type="number" id="plate-city" placeholder="۱۲۳" maxlength="3"
+                    class="w-16 text-center text-xl font-black text-black outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    dir="ltr">
+            </div>
+            <!-- ردیف پایین: فقط ۵ رقم (بدون حرف) -->
+            <div class="flex flex-row-reverse justify-center items-center gap-1 py-1.5 px-2" style="min-height: 42px;">
+                <input type="number" id="plate-part2" placeholder="۵۵" maxlength="2"
+                    class="w-9 text-center text-xl font-black text-black outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    dir="ltr">
+                <input type="number" id="plate-part1" placeholder="۱۲۳" maxlength="3"
+                    class="w-12 text-center text-xl font-black text-black outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    dir="ltr">
+                <!-- حرف برای موتور استفاده نمی‌شود؛ مخفی نگه می‌داریم تا JS خطا ندهد -->
+                <select id="plate-char" class="hidden" aria-hidden="true" tabindex="-1">
+                    <option value="" selected></option>
+                </select>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- پلاک خودرو -->
+    <div class="flex flex-row-reverse items-center bg-white border border-gray-300 rounded-2xl overflow-hidden shadow-sm" style="width: 300px; height: 65px;">
+        <div class="bg-[#003399] w-12 h-full flex flex-col items-center justify-center text-white">
+            <div class="w-6 h-4 bg-white/20 rounded-sm mb-1 border border-white/30"></div>
+            <span class="text-[8px] font-bold italic">I.R.</span>
+            <span class="text-[8px] font-bold">IRAN</span>
+        </div>
+        <input type="number" id="plate-part1" placeholder="۱۲" 
+            class="w-14 h-full text-center text-2xl font-black text-gray-800 outline-none border-l border-gray-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+        <div class="relative w-16 h-full bg-gray-50/50 border-l border-gray-100">
+            <select id="plate-char" class="w-full h-full text-center text-xl font-black text-green-700 bg-transparent outline-none cursor-pointer appearance-none px-2">
+                <option value="الف">الف</option>
+                <option value="ب">ب</option>
+                <option value="ج">ج</option>
+                <option value="د">د</option>
+                <option value="س">س</option>
+                <option value="ط">ط</option>
+                <option value="ق">ق</option>
+                <option value="ل">ل</option>
+                <option value="م">م</option>
+                <option value="ن">ن</option>
+                <option value="و">و</option>
+                <option value="ه">ه</option>
+                <option value="ی">ی</option>
+            </select>
+            <div class="absolute bottom-1 left-1/2 -translate-x-1/2">
+                <i class="fa-solid fa-caret-down text-[8px] text-green-300"></i>
+            </div>
+        </div>
+        <input type="number" id="plate-part2" placeholder="55" 
+            class="w-20 h-full text-center text-2xl font-black text-gray-800 outline-none border-l-2 border-gray-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+        <div class="flex flex-col items-center justify-center w-14 h-full bg-gray-50/50">
+            <span class="text-[9px] text-gray-400 font-bold">ایران</span>
+            <input type="number" id="plate-city" placeholder="55" 
+                class="w-full text-center text-xl font-black text-gray-800 bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+        </div>
+    </div>
+    {% endif %}
+</div>
+<button onclick="validateInformation()"
+  class="group relative w-full overflow-hidden rounded-2xl
+         bg-gradient-to-tr from-emerald-600 to-emerald-500
+         px-5 py-3.5 font-black text-white
+         shadow-[0_12px_28px_rgba(16,185,129,0.25)]
+         transition-all duration-200
+         hover:brightness-110 hover:shadow-[0_16px_38px_rgba(16,185,129,0.28)]
+         active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-emerald-100">
+
+  <!-- shine -->
+  <span class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+    <span class="absolute -left-10 top-0 h-full w-24 rotate-12 bg-white/25 blur-md"></span>
+  </span>
+
+  <span class="relative flex items-center justify-center gap-2">
+    تایید و ادامه
+    <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-white/15 border border-white/20
+                 transition group-hover:bg-white/20">
+      <i class="fa-solid fa-arrow-left text-sm"></i>
+    </span>
+  </span>
+</button>
+                    </div>
+
+                    <div id="step-2" class="step-content hidden text-right">
+                        <h2 class="text-xl font-black text-gray-800 mb-6">مشخصات فنی {{ vehicle_label }}</h2>
+                        <div class="space-y-6">
+                            <div class="relative">
+                                <select id="brand-select" onchange="loadModels(this.value)" class="w-full p-4 border border-gray-100 bg-gray-50 rounded-2xl outline-none focus:bg-white focus:border-green-400 transition-all text-right appearance-none">
+                                    <option value="">انتخاب برند</option>
+                                    {% if is_motorcycle %}
+                                        {% for brand in motorcycle_brands %}<option value="{{ brand.id }}">{{ brand.name }}</option>{% endfor %}
+                                    {% else %}
+                                        {% for brand in brands %}<option value="{{ brand.id }}">{{ brand.name }}</option>{% endfor %}
+                                    {% endif %}
+                                </select>
+                                <label class="absolute -top-2 right-4 bg-white px-2 text-[10px] text-gray-400">برند {{ vehicle_label }}</label>
+                            </div>
+                            <div class="relative">
+                                <select id="model-select" class="w-full p-4 border border-gray-100 bg-gray-50 rounded-2xl outline-none focus:bg-white focus:border-green-400 transition-all text-right appearance-none">
+                                    <option value="">ابتدا برند را انتخاب کنید</option>
+                                </select>
+                                <label class="absolute -top-2 right-4 bg-white px-2 text-[10px] text-gray-400">مدل {{ vehicle_label }}</label>
+                            </div>
+                            <div class="relative">
+                                <select id="year-select" class="w-full p-4 border border-gray-100 bg-gray-50 rounded-2xl outline-none focus:bg-white focus:border-green-400 transition-all text-right appearance-none text-sm">
+                                    <option value="">انتخاب سال ساخت</option>
+                                    {% for y in production_years %}<option value="{{ y.year }}">{{ y.year }}</option>{% endfor %}
+                                </select>
+                                <label class="absolute -top-2 right-4 bg-white px-2 text-[10px] text-gray-400">سال ساخت</label>
+                            </div>
+                            {% if not is_motorcycle %}
+                            <div class="relative">
+    <select id="fuel-select" class="w-full p-4 border border-gray-100 bg-gray-50 rounded-2xl outline-none focus:bg-white focus:border-green-400 transition-all text-right appearance-none">
+        <option value="gasoline">بنزینی</option>
+        <option value="diesel">دیزلی</option>
+        <option value="hybrid">هیبرید</option>
+        <option value="electric">برقی</option>
+        <option value="cng">دوگانه سوز</option>
+    </select>
+    <label class="absolute -top-2 right-4 bg-white px-2 text-[10px] text-gray-400">نوع سوخت</label>
+</div>
+                            {% endif %}
+                        </div>
+<button onclick="updateInsurancePrices()"
+  class="group relative w-full mt-6 overflow-hidden rounded-2xl
+         bg-gradient-to-tr from-emerald-600 to-emerald-500
+         px-5 py-3.5 font-black text-white
+         shadow-[0_12px_28px_rgba(16,185,129,0.25)]
+         transition-all duration-200
+         hover:brightness-110 hover:shadow-[0_16px_38px_rgba(16,185,129,0.28)]
+         active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-emerald-100">
+
+  <!-- shine -->
+  <span class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+    <span class="absolute -left-10 top-0 h-full w-24 rotate-12 bg-white/25 blur-md"></span>
+  </span>
+
+  <span class="relative flex items-center justify-center gap-2">
+    مشاهده قیمت نهایی
+    <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-white/15 border border-white/20
+                 transition group-hover:bg-white/20">
+      <i class="fa-solid fa-arrow-left text-sm"></i>
+    </span>
+  </span>
+</button>
+                    </div>
+
+                    <div id="step-3" class="step-content hidden text-center py-10">
+                        <i class="fa-solid fa-circle-check text-green-500 text-5xl mb-4"></i>
+                        <h2 class="text-xl font-black text-gray-800 mb-2">اطلاعات تایید شد</h2>
+                        <p class="text-gray-500 text-sm mb-6">قیمت‌های پیشنهادی در سمت چپ قابل مشاهده هستند.</p>
+                        <button onclick="goToStep(2)" class="text-green-500 font-bold text-sm">ویرایش اطلاعات</button>
+                    </div>
+
+                    <div id="step-4" class="step-content hidden text-right space-y-6">
+    <h2 class="text-xl font-black text-gray-800 mb-6">پیش‌نویس بیمه‌نامه</h2>
+    
+    <div class="bg-gray-50 p-6 rounded-3xl border border-dashed border-gray-200 space-y-4">
+        <div class="flex justify-between border-b border-gray-100 pb-2">
+            <span class="text-gray-500 text-xs">کد ملی مالک:</span>
+            <span id="summary-id" class="font-bold text-sm text-gray-800">---</span>
+        </div>
+        <div class="flex justify-between border-b border-gray-100 pb-2">
+            <span class="text-gray-500 text-xs">شماره پلاک {{ vehicle_label }}:</span>
+            <span id="summary-plate" class="font-bold text-sm text-gray-800" dir="ltr">---</span>
+        </div>
+        <div class="flex justify-between border-b border-gray-100 pb-2">
+            <span class="text-gray-500 text-xs">شرکت بیمه:</span>
+            <span id="summary-company" class="font-bold text-sm text-green-600">---</span>
+        </div>
+        <div class="flex justify-between border-b border-gray-100 pb-2">
+            <span class="text-gray-500 text-xs">نوع پرداخت:</span>
+            <span id="summary-type" class="font-bold text-sm text-orange-500">---</span>
+        </div>
+        <div class="flex justify-between pt-2">
+            <span class="text-gray-700 font-black text-sm">مبلغ قابل پرداخت:</span>
+            <span id="summary-price" class="font-black text-green-600 text-lg">---</span>
+        </div>
+    </div>
+
+    <button onclick="confirmAndPay()" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black shadow-lg hover:shadow-green-200 transition-all">
+        تایید نهایی و پرداخت آنلاین
+    </button>
+    <button onclick="goToStep(3)" class="w-full text-gray-400 text-xs font-bold py-2">بازگشت و اصلاح</button>
+</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="bg-gray-50 pt-16 pb-8 border-t border-gray-100" dir="rtl">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12 text-right">
+            <div>
+                <h3 class="text-xl font-black text-green-600 mb-6">ایمنو</h3>
+                <p class="text-gray-500 text-xs leading-relaxed mb-6 text-justify">
+                    ایمنو سامانه مقایسه و خرید آنلاین بیمه است. ما در ایمنو در تلاشیم تا فرآیند خرید بیمه را برای شما شفاف، ساده و سریع کنیم.
+                </p>
+                <div class="flex gap-4 text-gray-400">
+                    <a href="#" class="hover:text-green-600 transition-colors"><i class="fa-brands fa-instagram text-xl"></i></a>
+                    <a href="#" class="hover:text-green-600 transition-colors"><i class="fa-brands fa-telegram text-xl"></i></a>
+                    <a href="#" class="hover:text-green-600 transition-colors"><i class="fa-brands fa-linkedin text-xl"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold text-gray-800 mb-6">دسترسی سریع</h4>
+                <ul class="space-y-4 text-gray-500 text-sm">
+                    <li><a href="#" class="hover:text-green-600 transition-all">استعلام بیمه شخص ثالث</a></li>
+                    <li><a href="#" class="hover:text-green-600 transition-all">بیمه بدنه خودرو</a></li>
+                    <li><a href="#" class="hover:text-green-600 transition-all">بیمه آتش‌سوزی</a></li>
+                    <li><a href="#" class="hover:text-green-600 transition-all">قوانین و مقررات</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-gray-800 mb-6">تماس با ما</h4>
+                <ul class="space-y-4 text-gray-500 text-sm">
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-phone text-green-500"></i>
+                        <span>۰۲۱-۱۲۳۴۵۶۷۸</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-envelope text-green-500"></i>
+                        <span>info@imeno.ir</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i class="fa-solid fa-location-dot text-green-500 mt-1"></i>
+                        <span>تهران، خیابان ولیعصر، نرسیده به میدان ونک، ساختمان ایمنو</span>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-gray-800 mb-6">مجوزها و تاییدیه</h4>
+                <div class="flex gap-4">
+                    <div class="w-24 h-24 bg-white rounded-2xl border border-gray-100 flex items-center justify-center p-2 shadow-sm">
+                        <img src="https://trustseal.enamad.ir/Content/Images/Logo.png" alt="اینماد" class="grayscale hover:grayscale-0 transition-all">
+                    </div>
+                    <div class="w-24 h-24 bg-white rounded-2xl border border-gray-100 flex items-center justify-center p-2 shadow-sm">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Samandehi_logo.png" alt="ساماندهی" class="grayscale hover:grayscale-0 transition-all">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-100 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-gray-400 text-xs text-center">تمامی حقوق متعلق به «ایمنو» می‌باشد. © ۲۰۲۶</p>
+            <div class="flex gap-6 text-xs text-gray-400">
+                <a href="#" class="hover:text-green-600 transition-all">درباره ما</a>
+                <a href="#" class="hover:text-green-600 transition-all">تماس با ما</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+function goToStep(step) {
+    document.querySelectorAll('.step-content').forEach(s => s.classList.add('hidden'));
+    document.getElementById('step-' + step).classList.remove('hidden');
+}
+
+function loadModels(brandId) {
+    const modelSelect = document.getElementById('model-select');
+    if(!modelSelect) return;
+    modelSelect.innerHTML = '<option value="">در حال بارگذاری...</option>';
+    if (!brandId) {
+        modelSelect.innerHTML = '<option value="">ابتدا برند را انتخاب کنید</option>';
+        return;
+    }
+    fetch(`/api/get-models/?brand_id=${brandId}`)
+        .then(response => response.json())
+        .then(data => {
+            modelSelect.innerHTML = '<option value="">انتخاب مدل</option>';
+            data.forEach(model => {
+                modelSelect.innerHTML += `<option value="${model.id}" data-price="${model.base_price}">${model.name}</option>`;
+            });
+        });
+}
+
+function updateInsurancePrices() {
+    const modelId = document.getElementById('model-select').value;
+    const yearSelect = document.getElementById('year-select').value;
+    const insuranceList = document.getElementById('insurance-list');
+
+    if (!modelId || !yearSelect) {
+        alert('لطفاً ابتدا مدل {{ vehicle_label }} و سال ساخت را انتخاب کنید.');
+        return;
+    }
+
+    // ۱. رفتن به مرحله "تایید شد"
+    goToStep(3);
+    
+    // ۲. نمایش حالت در حال بارگذاری در لیست سمت راست
+    insuranceList.innerHTML = `
+        <div class="text-center py-10 animate-pulse">
+            <i class="fa-solid fa-calculator text-blue-500 text-3xl mb-2"></i>
+            <p class="text-xs text-blue-500 font-bold">در حال استعلام قیمت واقعی از شرکت‌ها...</p>
+        </div>`;
+
+    // ۳. ارسال درخواست به جنگو برای محاسبه قیمت بر اساس دیتابیس
+    // نکته: آدرس /api/calculate-prices/ را باید در urls.py بسازی
+    fetch(`/api/calculate-prices/?model_id=${modelId}&year=${yearSelect}`)
+        .then(response => response.json())
+        .then(data => {
+            insuranceList.innerHTML = ''; // خالی کردن لیست برای دیتای جدید
+
+            if (data.results.length === 0) {
+                insuranceList.innerHTML = '<p class="text-center text-gray-400 text-xs">نرخی یافت نشد.</p>';
+                return;
+            }
+
+            data.results.forEach((item, index) => {
+                // ساختن کارت‌ها بر اساس اطلاعات دیتابیس
+                insuranceList.innerHTML += `
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 space-y-4 mb-4 relative overflow-hidden">
+                    ${index === 0 ? '<span class="absolute top-0 left-0 bg-green-500 text-white text-[8px] px-3 py-1 rounded-br-2xl">بهترین قیمت</span>' : ''}
+                    
+                    <div class="flex items-center justify-between flex-row">
+                        <div class="flex items-center gap-3">
+                            <img src="${item.company_logo}" class="w-10 h-10 object-contain rounded-lg">
+                            <div class="text-right">
+                                <span class="font-black text-sm text-gray-700 block italic">بیمه ${item.company_name}</span>
+                                <span class="text-[9px] text-blue-500 font-bold bg-blue-50 px-2 py-0.5 rounded-full">توانگری: ${item.wealth_level}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center bg-green-50/50 p-3 rounded-2xl border border-green-100">
+                        <span class="text-sm font-black text-gray-800">${parseInt(item.final_price).toLocaleString()} تومان</span>
+                        <span class="text-[11px] font-bold text-green-600">پرداخت نقدی</span>
+                    </div>
+
+                    <div class="flex justify-between items-center bg-blue-50/30 p-3 rounded-2xl border border-blue-50">
+                        <div class="text-left">
+                            <span class="text-sm font-black text-gray-800">${parseInt(item.installment_price).toLocaleString()}</span>
+                            <span class="text-[8px] text-gray-400 block">تومان / ماه</span>
+                        </div>
+                        <span class="text-[11px] font-bold text-blue-600">پرداخت اقساطی</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="finalOrder('${item.company_name}', ${item.final_price}, 'نقدی')" 
+                            class="bg-green-500 text-white py-2 rounded-xl font-bold text-[10px] hover:bg-green-600 transition-all shadow-sm">
+                            انتخاب نقدی
+                        </button>
+                        <button onclick="finalOrder('${item.company_name}', ${item.installment_price}, 'اقساطی')" 
+                            class="bg-blue-500 text-white py-2 rounded-xl font-bold text-[10px] hover:bg-blue-600 transition-all shadow-sm">
+                            انتخاب اقساط
+                        </button>
+                    </div>
+                </div>`;
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            insuranceList.innerHTML = '<p class="text-center text-red-400 text-xs">خطا در دریافت اطلاعات</p>';
+        });
+}
+
+function validateInformation() {
+    const nationalId = document.getElementById('national-id').value;
+    if (nationalId.length !== 10 || isNaN(nationalId)) {
+        alert('لطفاً کد ملی ۱۰ رقمی معتبر وارد کنید');
+        return;
+    }
+    goToStep(2);
+}
+
+// پر کردن سال‌ها
+const yearSel = document.getElementById('year-select');
+if(yearSel) {
+    for (let year = 1404; year >= 1370; year--) {
+        let option = document.createElement('option');
+        option.value = year; option.text = year;
+        yearSel.appendChild(option);
+    }
+}
+function finalOrder(company, price, type) {
+    // ۱. گرفتن اطلاعات با احتیاط (Optional Chaining یا چک کردن وجود)
+    const nationalIdEl = document.getElementById('national-id');
+    const p1El = document.getElementById('plate-part1');
+    const p2El = document.getElementById('plate-part2'); // چک کن پارت ۲ هست یا ۳
+    const pCharEl = document.getElementById('plate-char');
+    const pCityEl = document.getElementById('plate-city');
+
+    const nationalId = nationalIdEl ? nationalIdEl.value : '---';
+    const p1 = p1El ? p1El.value : '';
+    const p2 = p2El ? p2El.value : '';
+    const pChar = pCharEl ? pCharEl.value : '';
+    const pCity = pCityEl ? pCityEl.value : '';
+    
+    // ۲. پر کردن خلاصه در مرحله چهارم
+    const summaryId = document.getElementById('summary-id');
+    const summaryPlate = document.getElementById('summary-plate');
+    const summaryCompany = document.getElementById('summary-company');
+    const summaryType = document.getElementById('summary-type');
+    const summaryPrice = document.getElementById('summary-price');
+
+    if (summaryId) summaryId.innerText = nationalId;
+    if (summaryPlate) summaryPlate.innerText = `ایران ${pCity} | ${p2} ${pChar} ${p1}`;
+    if (summaryCompany) summaryCompany.innerText = 'بیمه ' + company;
+    if (summaryType) summaryType.innerText = type;
+    if (summaryPrice) summaryPrice.innerText = price.toLocaleString() + ' تومان';
+
+    // ۳. رفتن به مرحله آخر
+    goToStep(4);
+}
+
+function confirmAndPay() {
+    // ۱. نمایش پیام برای اطمینان از شروع فرآیند
+    console.log("شروع فرآیند ثبت سفارش...");
+
+    // ۲. گرفتن توکن امنیتی جنگو
+    const csrftoken = getCookie('csrftoken');
+
+    // ۳. جمع‌آوری اطلاعات از صفحه (مطمئن شو این IDها در HTML وجود دارند)
+    const priceElement = document.getElementById('summary-price');
+    const companyElement = document.getElementById('summary-company');
+    const plateElement = document.getElementById('summary-plate');
+    const typeElement = document.getElementById('summary-type');
+
+    if (!priceElement || !companyElement) {
+        alert("خطا: اطلاعات سفارش کامل نیست.");
+        return;
+    }
+
+    const orderData = {
+        company: companyElement.innerText.replace('بیمه ', ''),
+        price: parseInt(priceElement.innerText.replace(/,/g, '').replace(' تومان', '').trim()),
+        type: typeElement ? typeElement.innerText : 'نقدی',
+        plate: plateElement ? plateElement.innerText : '---',
+    };
+
+    // ۴. ارسال درخواست به سمت ویو Django
+    fetch('/api/submit-order/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify(orderData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('بیمه شما با موفقیت صادر شد!');
+            window.location.href = '/dashboard/'; // هدایت به پنل کاربری
+        } else {
+            alert('خطا در ثبت: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('ارتباط با سرور برقرار نشد.');
+    });
+}
+
+// این تابع برای گرفتن CSRF Token الزامی است
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+</script>
+{% endblock %}

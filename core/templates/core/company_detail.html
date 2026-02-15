@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-12" dir="rtl">
+    <nav class="text-sm text-gray-500 mb-8">
+        <a href="{% url 'core:home' %}" class="hover:text-green-600">خانه</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-800">{{ company.name }}</span>
+    </nav>
+
+    <div class="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden mb-10">
+        <div class="p-8 md:p-12 flex flex-col md:flex-row items-center gap-8">
+            {% if company.logo %}
+            <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="w-32 h-32 object-contain border border-gray-100 rounded-2xl p-2">
+            {% endif %}
+            <div class="flex-1 text-right">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">{{ company.name }}</h1>
+                <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+                    <span>سطح توانگری: {{ company.wealth_level }}</span>
+                    <span>پاسخگویی به شکایات: {{ company.complaint_response_rate }}٪</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if rates %}
+    <h2 class="text-xl font-bold text-gray-800 mb-4">نرخ‌های این شرکت</h2>
+    <div class="space-y-4">
+        {% for rate in rates %}
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-wrap items-center justify-between gap-4">
+            <span class="font-medium text-gray-700">{{ rate.get_insurance_type_display }}</span>
+            <div class="text-left">
+                {% load humanize %}
+                <span class="text-green-600 font-bold">{{ rate.base_fee|floatformat:0|intcomma }} ریال</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-500 text-center py-8">نرخی برای این شرکت ثبت نشده است.</p>
+    {% endif %}
+</div>
+{% endblock %}

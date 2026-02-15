@@ -1,0 +1,890 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-6">
+
+  <!-- HERO -->
+  <div class="relative flex flex-col md:flex-row items-center justify-between gap-6
+            mb-10 rounded-[2rem] border border-emerald-100
+            bg-gradient-to-b from-emerald-50 via-white to-white
+            px-6 py-6 md:px-10 md:py-8 overflow-hidden
+            shadow-[0_10px_30px_rgba(0,0,0,0.06)]
+            min-h-[220px]"
+     dir="rtl">
+
+
+    <!-- decorative blobs -->
+    <div class="pointer-events-none absolute inset-0">
+      <div class="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full bg-emerald-300/30 blur-3xl"></div>
+      <div class="absolute -bottom-28 -left-28 w-[460px] h-[460px] rounded-full bg-teal-300/20 blur-3xl"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-emerald-50/40 via-transparent to-white/30"></div>
+    </div>
+
+    <div class="relative z-10 text-right max-w-xl">
+      <span class="inline-flex items-center gap-2 bg-white/70 backdrop-blur border border-emerald-100
+                   px-4 py-2 rounded-2xl text-xs text-emerald-700 mb-4">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        بیمه، ساده و سریع
+      </span>
+
+      <h1 class="text-3xl md:text-4xl font-black text-emerald-950 mb-6 leading-relaxed">
+        خرید آسان بیمه با ایمنو
+      </h1>
+
+      <div class="flex flex-wrap gap-4">
+        <button
+          class="bg-gradient-to-tr from-orange-500 to-amber-500 hover:brightness-110
+                 text-white px-8 py-3.5 rounded-2xl shadow-lg shadow-orange-500/25
+                 transition-all transform hover:scale-[1.03] active:scale-[0.99]">
+          دانلود اپلیکیشن
+        </button>
+
+        <button onclick="openInquiryModal()"
+          class="bg-gradient-to-tr from-emerald-600 to-emerald-500 hover:brightness-110
+                 text-white px-8 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/25
+                 transition-all transform hover:scale-[1.02] active:scale-[0.99]">
+          درخواست مشاوره
+        </button>
+
+        <button onclick="openDamageModal()"
+          class="bg-gradient-to-tr from-red-600 to-rose-600 hover:brightness-110
+                 text-white px-8 py-3.5 rounded-2xl shadow-lg shadow-red-600/25
+                 transition-all font-black transform hover:scale-[1.02] active:scale-[0.99]">
+          ثبت خسارت آنلاین
+        </button>
+      </div>
+    </div>
+
+    <img ... class="w-52 md:w-60 relative z-10 drop-shadow-xl" />
+
+  </div>
+
+  <!-- Floating Damage -->
+  <div class="fixed bottom-8 right-8 z-[100] md:block hidden">
+    <button onclick="openDamageModal()"
+      class="group flex items-center gap-3 bg-gradient-to-tr from-red-600 to-rose-600 hover:brightness-110
+             text-white p-4 rounded-full shadow-2xl transition-all">
+      <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500
+                   whitespace-nowrap font-black">
+        ثبت خسارت فوری
+      </span>
+      <i class="fa-solid fa-briefcase-medical text-2xl"></i>
+    </button>
+  </div>
+
+  <!-- Cards Container -->
+  <div class="relative bg-white/90 backdrop-blur rounded-[2rem]
+px-6 py-8 md:px-10 md:py-10
+shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
+
+
+    <!-- Tabs (attached to box) -->
+    <div class="absolute top-0 right-8 -translate-y-1/2 z-20" id="tab-container" dir="rtl">
+      <div class="inline-flex items-stretch gap-1
+                  bg-white border border-gray-200 rounded-2xl p-1
+                  shadow-[0_8px_22px_rgba(0,0,0,0.10)]">
+
+        <button onclick="filterCards('insurance', this)"
+          class="tab-btn active-tab px-4 py-2.5 flex flex-col items-center gap-0.5
+                 rounded-xl bg-white transition shadow-sm">
+          <i class="fa-solid fa-shield-halved text-base"></i>
+          <span class="text-[11px] font-black leading-none">بیمه</span>
+        </button>
+
+        <button onclick="filterCards('service', this)"
+          class="tab-btn px-4 py-2.5 flex flex-col items-center gap-0.5
+                 rounded-xl bg-gray-50/70
+                 text-gray-400 hover:text-gray-700 hover:bg-gray-100
+                 transition">
+          <i class="fa-solid fa-basket-shopping text-base"></i>
+          <span class="text-[11px] font-black leading-none">کالا و خدمات</span>
+        </button>
+
+        <button onclick="filterCards('investment', this)"
+          class="tab-btn px-4 py-2.5 flex flex-col items-center gap-0.5
+                 rounded-xl bg-gray-50/70
+                 text-gray-400 hover:text-gray-700 hover:bg-gray-100
+                 transition">
+          <i class="fa-solid fa-money-bill-trend-up text-base"></i>
+          <span class="text-[11px] font-black leading-none">سرمایه‌گذاری</span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Title + Search (space reserved for tabs) -->
+    <div class="relative pt-6 md:pt-2 flex flex-col md:flex-row justify-between items-end md:items-center
+                mb-2 gap-4 pr-2 md:pr-2"
+         dir="rtl">
+
+      <div class="text-right">
+        <h2 class="text-2xl md:text-3xl font-black text-emerald-950 leading-relaxed">
+          ایمنو؛ مقایسه و خرید آنلاین بیمه
+        </h2>
+        <p class="text-base md:text-lg text-gray-600 mt-2 font-medium">
+          بیمه‌ مورد نظرت رو انتخاب کن!
+        </p>
+        <div class="w-20 md:w-24 h-1 bg-emerald-600 mt-4 rounded-full"></div>
+      </div>
+
+      <div class="w-full md:w-[380px]">
+        <div onclick="toggleModal()" class="relative cursor-pointer group">
+          <input type="text" readonly placeholder="جستجوی سریع بیمه..."
+                 class="w-full bg-white border-2 border-gray-100 rounded-2xl py-3.5 px-5 pr-11
+                        text-gray-500 cursor-pointer shadow-sm
+                        group-hover:border-emerald-500 transition-all outline-none
+                        focus:ring-4 focus:ring-emerald-100">
+          <i class="fa-solid fa-magnifying-glass absolute right-4 top-4 text-gray-400
+                    group-hover:text-emerald-600 transition-colors"></i>
+
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400
+                       bg-white/90 border border-gray-100 px-2.5 py-1 rounded-full
+                       opacity-0 group-hover:opacity-100 transition">
+            کلیک برای نمایش همه
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+
+       
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8" id="insurance-grid" dir="rtl">
+                {% for ins in all_insurances %}
+                    <div onclick="location.href='{% url 'core:insurance_detail' ins.slug %}'" 
+                         class="insurance-card border border-gray-100 rounded-[2rem] p-8 flex flex-col items-center hover:shadow-2xl hover:border-green-200 transition-all cursor-pointer group bg-white" 
+                         data-category="{{ ins.get_category_display }}">
+                        
+                        {% if ins.image %}
+                            <img src="{{ ins.image.url }}" class="w-16 h-16 mb-4 object-contain group-hover:scale-110 transition-transform">
+                        {% endif %}
+                        
+                        <h3 class="font-bold text-base text-gray-700 text-center group-hover:text-green-600">{{ ins.title }}</h3>
+                        
+                        
+                        {% if ins.badge_text %}
+                            <span class="mt-2 text-[10px] px-2 py-1 bg-green-100 text-green-600 rounded-full font-bold">
+                                {{ ins.badge_text }}
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div id="moreButtonContainer" class="text-center mt-12" style="display: none;"> 
+                <button onclick="toggleModal()" class="bg-white border-2 border-green-600 text-green-600 px-12 py-3 rounded-full font-bold hover:bg-green-600 hover:text-white transition-all shadow-md">
+                    مشاهده همه بیمه‌ها <i class="fa-solid fa-plus mr-2"></i>
+                </button>
+            </div>
+       
+
+    </div>
+</section>
+
+<div id="insuranceModal" class="fixed inset-0 bg-black/60 z-[999] hidden items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden">
+        <div class="p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800">جستجوی تمام بیمه‌ها</h3>
+                <button onclick="toggleModal()" class="text-gray-400 hover:text-red-500 text-3xl">&times;</button>
+            </div>
+            
+            <div class="relative mb-6">
+                <input type="text" id="insuranceSearch" onkeyup="filterInsurances()" placeholder="نام بیمه مورد نظر را بنویسید..." 
+                       class="w-full border-2 border-gray-100 rounded-2xl py-4 px-6 pr-12 focus:border-green-500 outline-none transition-all" dir="rtl">
+                <i class="fa-solid fa-magnifying-glass absolute right-5 top-5 text-gray-400"></i>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-[400px] overflow-y-auto pr-2" id="insuranceList" dir="rtl">
+                {% for ins in all_insurances %}
+                    {% if ins.get_category_display != 'کالا و خدمات' and ins.get_category_display != 'سرمایه‌گذاری' %}
+                    <a href="{% url 'core:insurance_detail' ins.slug %}" class="insurance-item flex flex-col items-center p-4 bg-gray-50 rounded-2xl hover:bg-green-50 transition-colors border border-transparent hover:border-green-200">
+                        <img src="{{ ins.image.url }}" class="w-12 h-12 object-contain mb-2">
+                        <span class="text-sm font-medium text-gray-700 text-center">{{ ins.title }}</span>
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="py-20 max-w-7xl mx-auto px-4" dir="rtl">
+        <div class="flex flex-col lg:flex-row items-center gap-12">
+            <div class="flex-1 text-right">
+                <h2 class="text-3xl font-black text-gray-800 mb-2">چرا از «ایمنو» بخرم؟</h2>
+                <p class="text-gray-500 mb-10">چون ما در ایمنو بهت کمک می‌کنیم مناسب‌ترین بیمه رو انتخاب کنی.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
+                    {% for feature in features %}
+                    <div class="flex items-start gap-4 group">
+                        <div class="w-12 h-12 flex-shrink-0 bg-green-50 rounded-xl flex items-center justify-center text-green-600 text-xl group-hover:bg-green-600 group-hover:text-white transition-all">
+                            <i class="{{ feature.icon_class }}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 mb-1 text-sm">{{ feature.title }}</h4>
+                            <p class="text-gray-400 text-xs leading-relaxed italic">{{ feature.description }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="flex-1 relative">
+                <div class="relative w-full max-w-md mx-auto aspect-square bg-green-600 rounded-full overflow-hidden shadow-2xl border-[15px] border-white">
+                    <img src="https://www.azki.com/main/_next/image?url=%2Fmain%2Fimages%2Fhome%2Fwhy-azki-building.jpg&w=1920&q=75" 
+                         class="w-full h-full object-cover" alt="دفتر ایمنو">
+                </div>
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-400 rounded-full -z-10 opacity-20 blur-2xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-green-400 rounded-full -z-10 opacity-20 blur-2xl"></div>
+            </div>
+        </div>
+        
+        <div class="mt-20 border-t border-gray-100 pt-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="flex flex-col items-center gap-2">
+                <i class="fa-solid fa-truck-fast text-gray-400 text-2xl"></i>
+                <span class="text-xs font-bold text-gray-500">ارسال رایگان به سراسر ایران</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <i class="fa-solid fa-headset text-gray-400 text-2xl"></i>
+                <span class="text-xs font-bold text-gray-500">پشتیبانی ۲۴ ساعته</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <i class="fa-solid fa-scale-balanced text-gray-400 text-2xl"></i>
+                <span class="text-xs font-bold text-gray-500">امکان مقایسه بیمه‌ها</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <i class="fa-solid fa-calendar-check text-gray-400 text-2xl"></i>
+                <span class="text-xs font-bold text-gray-500">امکان خرید اقساطی</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-20 text-center" dir="rtl">
+        <h2 class="text-3xl font-black text-gray-800 mb-2">اگه تصادف کردم، چیکار کنم؟</h2>
+        <p class="text-gray-500 mb-12">در ۵ مرحله ساده درخواست خسارتت رو ثبت کن.</p>
+        <div class="relative flex flex-col md:flex-row items-center justify-center gap-4 min-h-[500px]">
+            <div class="flex-1 flex flex-col gap-24 text-right items-end pr-10 md:pr-32 order-1">
+                {% for step in damage_steps %}
+                    {% if step.number == 1 or step.number == 3 or step.number == 5 %}
+                    <div class="w-full max-w-[280px]">
+                        <h3 class="text-green-600 font-bold text-lg mb-2">{{ step.number }}. {{ step.title }}</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">{{ step.description }}</p>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="flex-1 flex justify-center order-2 relative h-[500px] w-full max-w-[200px]">
+                <svg viewBox="0 0 200 500" class="h-full w-full" fill="none">
+                    <path d="M100 0 C 180 100, 180 150, 100 250 S 20 400, 100 500" stroke="#f0fdf4" stroke-width="45" stroke-linecap="round"/>
+                    <path d="M100 0 C 180 100, 180 150, 100 250 S 20 400, 100 500" stroke="#dcfce7" stroke-width="40" stroke-linecap="round"/>
+                    <path d="M100 0 C 180 100, 180 150, 100 250 S 20 400, 100 500" stroke="white" stroke-width="2" stroke-dasharray="12 18"/>
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="bg-white p-4 rounded-full shadow-2xl border-4 border-green-50 animate-bounce cursor-pointer group" onclick="openDamageModal()">
+                        <i class="fa-solid fa-car-side text-4xl text-green-600 group-hover:text-red-500 transition-colors"></i>
+                        <span class="absolute -bottom-10 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 whitespace-nowrap">ثبت خسارت</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 flex flex-col gap-24 text-right items-start pl-10 md:pl-32 order-3">
+                {% for step in damage_steps %}
+                    {% if step.number == 2 or step.number == 4 %}
+                    <div class="w-full max-w-[280px]">
+                        <h3 class="text-green-600 font-bold text-lg mb-2">{{ step.number }}. {{ step.title }}</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">{{ step.description }}</p>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="py-20 bg-green-50/30 rounded-[3rem] mt-10">
+        <h2 class="text-2xl font-bold text-gray-800 text-center mb-12">شرکت‌های بیمه همکار</h2>
+        <div class="flex flex-wrap justify-center items-center gap-10 opacity-70 grayscale hover:grayscale-0 transition-all px-6">
+            {% for company in companies %}
+            <div class="w-24">
+                <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="w-full h-auto object-contain">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="py-20 bg-gray-50/50 rounded-[3rem] mt-20 px-4 md:px-10" dir="rtl">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-black text-gray-800 mb-4">همه چیز درباره انواع بیمه...</h2>
+            <p class="text-gray-500">اینجا می‌تونی اطلاعات مورد نیازت رو درباره تمام بیمه‌ها بخونی.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {% for info in insurance_infos %}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-start gap-6 hover:shadow-md transition-all">
+                <div class="flex-1 text-right">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3">{{ info.title }}</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-4 text-justify">{{ info.description }}</p>
+                    <a href="{% if info.slug %}{% url 'core:insurance_info_detail' info.slug %}{% else %}{{ info.link }}{% endif %}" class="text-green-600 font-bold text-sm hover:text-green-800 transition-colors">
+                        بیشتر ←
+                    </a>
+                </div>
+                <div class="w-24 h-24 flex-shrink-0 bg-green-50 rounded-2xl overflow-hidden">
+                    <img src="{{ info.image.url }}" alt="{{ info.title }}" class="w-full h-full object-cover">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="py-20 bg-white" dir="rtl">
+        <div class="max-w-5xl mx-auto px-4">
+            <h2 class="text-2xl font-black text-center text-gray-800 mb-16">خرید آنلاین بیمه بدون نگرانی</h2>
+            <div class="relative">
+                {% for step in trust_steps %}
+                <div class="flex flex-col md:flex-row items-center gap-8 mb-12 relative">
+                    <div class="flex-1 bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm hover:shadow-green-100 hover:border-green-200 transition-all flex items-center gap-6 {% if forloop.counter|divisibleby:2 %}md:flex-row-reverse{% endif %}">
+                        <img src="{{ step.image.url }}" alt="{{ step.title }}" class="w-24 h-24 object-contain">
+                        <div class="text-right">
+                            <h3 class="font-bold text-gray-800 mb-3">{{ step.title }}</h3>
+                            <p class="text-gray-500 text-xs leading-relaxed text-justify">{{ step.description }}</p>
+                        </div>
+                    </div>
+                    {% if not forloop.last %}
+                    <div class="hidden md:block absolute -bottom-16 {% if forloop.counter|divisibleby:2 %}right-1/4{% else %}left-1/4{% endif %} w-32">
+                        <svg viewBox="0 0 100 100" class="text-green-200 w-full fill-none stroke-current stroke-2" style="stroke-dasharray: 5 5;">
+                            {% if forloop.counter|divisibleby:2 %}
+                            <path d="M0 0 Q 50 50 0 100" />
+                            {% else %}
+                            <path d="M100 0 Q 50 50 100 100" />
+                            {% endif %}
+                        </svg>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="py-20 max-w-4xl mx-auto px-4" dir="rtl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-black text-gray-800 mb-4">سوالات متداول</h2>
+            <p class="text-gray-500">پاسخ سوالاتی که شاید برای شما هم پیش آمده باشد.</p>
+        </div>
+        <div class="space-y-4">
+            {% for faq in faqs %}
+            <div class="border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all">
+                <button onclick="toggleFAQ({{ forloop.counter }})" class="w-full flex items-center justify-between p-6 bg-white hover:bg-green-50 text-right transition-colors">
+                    <span class="font-bold text-gray-700 text-sm md:text-base">{{ faq.question }}</span>
+                    <i id="icon-{{ forloop.counter }}" class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                </button>
+                <div id="faq-{{ forloop.counter }}" class="hidden p-6 bg-green-50/20 text-gray-600 text-sm leading-relaxed border-t border-gray-100">
+                    {{ faq.answer }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<footer class="bg-gray-50 pt-16 pb-8 border-t border-gray-100" dir="rtl">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12 text-right">
+            <div>
+                <h3 class="text-xl font-black text-green-600 mb-6">ایمنو</h3>
+                <p class="text-gray-500 text-xs leading-relaxed mb-6 text-justify">
+                    ایمنو سامانه مقایسه و خرید آنلاین بیمه است. ما در ایمنو در تلاشیم تا فرآیند خرید بیمه را برای شما شفاف، ساده و سریع کنیم.
+                </p>
+                <div class="flex gap-4 text-gray-400">
+                    <a href="#" class="hover:text-green-600 transition-colors"><i class="fa-brands fa-instagram text-xl"></i></a>
+                    <a href="#" class="hover:text-green-600 transition-colors"><i class="fa-brands fa-telegram text-xl"></i></a>
+                    <a href="#" class="hover:text-green-600 transition-colors"><i class="fa-brands fa-linkedin text-xl"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold text-gray-800 mb-6">دسترسی سریع</h4>
+                <ul class="space-y-4 text-gray-500 text-sm">
+                    <li><a href="#" class="hover:text-green-600 transition-all">استعلام بیمه شخص ثالث</a></li>
+                    <li><a href="#" class="hover:text-green-600 transition-all">بیمه بدنه خودرو</a></li>
+                    <li><a href="#" class="hover:text-green-600 transition-all">بیمه آتش‌سوزی</a></li>
+                    <li><a href="#" class="hover:text-green-600 transition-all">قوانین و مقررات</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-gray-800 mb-6">تماس با ما</h4>
+                <ul class="space-y-4 text-gray-500 text-sm">
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-phone text-green-500"></i>
+                        <span>۰۲۱-۱۲۳۴۵۶۷۸</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-envelope text-green-500"></i>
+                        <span>info@imeno.ir</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i class="fa-solid fa-location-dot text-green-500 mt-1"></i>
+                        <span>تهران، خیابان ولیعصر، نرسیده به میدان ونک، ساختمان ایمنو</span>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-gray-800 mb-6">مجوزها و تاییدیه</h4>
+                <div class="flex gap-4">
+                    <div class="w-24 h-24 bg-white rounded-2xl border border-gray-100 flex items-center justify-center p-2 shadow-sm">
+                        <img src="https://trustseal.enamad.ir/Content/Images/Logo.png" alt="اینماد" class="grayscale hover:grayscale-0 transition-all">
+                    </div>
+                    <div class="w-24 h-24 bg-white rounded-2xl border border-gray-100 flex items-center justify-center p-2 shadow-sm">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Samandehi_logo.png" alt="ساماندهی" class="grayscale hover:grayscale-0 transition-all">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-100 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-gray-400 text-xs text-center">تمامی حقوق متعلق به «ایمنو» می‌باشد. © ۲۰۲۶</p>
+            <div class="flex gap-6 text-xs text-gray-400">
+                <a href="#" class="hover:text-green-600 transition-all">درباره ما</a>
+                <a href="#" class="hover:text-green-600 transition-all">تماس با ما</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div id="damageModal" class="hidden fixed inset-0 z-[120] items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl w-[500px] max-w-full relative mx-4" style="background-color: white;">
+        <button onclick="closeDamageModal()" class="absolute top-4 left-4 text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+        <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">اعلام خسارت آنلاین</h3>
+        
+        <form action="{% url 'core:submit_damage' %}" method="POST" class="space-y-4 text-right" dir="rtl">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">شماره تماس جهت هماهنگی</label>
+                <input type="text" name="phone_number" required 
+                       class="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500" 
+                       placeholder="۰۹۱۲۳۴۵۶۷۸۹">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">نوع بیمه‌نامه</label>
+               <select name="insurance_type" class="...">
+    {% for ins in all_insurances %}
+        <option value="{{ ins.slug }}">{{ ins.title }}</option>
+    {% endfor %}
+</select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">آدرس بازدید کارشناس</label>
+                <textarea name="address" rows="2" class="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500" placeholder="آدرس دقیق..."></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all">
+                ثبت درخواست کارشناس
+            </button>
+        </form>
+    </div>
+</div>
+
+<div id="authModal" class="hidden fixed inset-0 z-[9999] items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-96 relative mx-4" style="background-color: white !important;">
+        <button onclick="closeAuthModal()" class="absolute top-6 left-6 text-gray-400 hover:text-red-500 transition-colors">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+
+        <div id="phoneStep">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-green-600 text-2xl">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">ورود یا ثبت‌نام</h3>
+            </div>
+            <input type="text" id="userMobile" placeholder="شماره موبایل (۰۹۱۲...)" class="w-full border border-gray-100 rounded-2xl py-4 px-6 text-center outline-none focus:border-green-500 transition-all mb-4">
+            <button onclick="checkUserStatus()" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-green-600/20">ادامه</button>
+        </div>
+
+        <div id="loginStep" class="hidden" dir="rtl">
+            <h3 class="text-xl font-bold text-center mb-6 text-gray-800">خوش آمدید</h3>
+            <p id="welcomeMobile" class="text-center text-gray-500 mb-4 text-sm"></p>
+            <div class="space-y-4">
+                <input type="password" id="loginPassword" placeholder="رمز عبور" class="w-full border rounded-xl p-4 outline-none focus:border-green-500 text-center">
+                <button onclick="submitAuth('login')" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl">ورود به حساب</button>
+                <button onclick="backToPhone()" class="w-full text-xs text-blue-500 mt-2">تغییر شماره موبایل</button>
+            </div>
+        </div>
+
+        <div id="registerStep" class="hidden" dir="rtl">
+            <h3 class="text-xl font-bold text-center mb-6 text-gray-800">عضویت در ایمنو</h3>
+            <div class="space-y-3">
+                <input type="text" id="regFirstName" placeholder="نام" class="w-full border rounded-xl p-3 outline-none focus:border-green-500">
+                <input type="text" id="regLastName" placeholder="نام خانوادگی" class="w-full border rounded-xl p-3 outline-none focus:border-green-500">
+                <input type="password" id="regPassword" placeholder="رمز عبور" class="w-full border rounded-xl p-3 outline-none focus:border-green-500">
+                <input type="password" id="regConfirm" placeholder="تکرار رمز عبور" class="w-full border rounded-xl p-3 outline-none focus:border-green-500">
+                <button onclick="submitAuth('register')" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl mt-4 shadow-lg">ثبت‌نام و ورود</button>
+            </div>
+        </div>
+        <div id="inquiryModal" class="hidden fixed inset-0 z-[150] items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-96 relative mx-4">
+        <button onclick="closeInquiryModal()" class="absolute top-6 left-6 text-gray-400 hover:text-red-500">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-emerald-600 text-2xl">
+                <i class="fa-solid fa-headset"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">درخواست مشاوره رایگان</h3>
+            <p class="text-gray-500 text-xs mt-2">شماره خود را وارد کنید تا کارشناسان ما با شما تماس بگیرند.</p>
+        </div>
+
+        <form action="{% url 'core:submit_inquiry' %}" method="POST" class="space-y-4">
+            {% csrf_token %}
+            <input type="text" name="phone" placeholder="شماره موبایل (۰۹۱۲...)" 
+                   class="w-full border border-gray-100 rounded-2xl py-4 px-6 text-center outline-none focus:border-emerald-500 transition-all">
+            
+            <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-600/20">
+                ثبت درخواست تماس
+            </button>
+        </form>
+        <div id="inquiryModal" class="hidden fixed inset-0 z-[150] items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-96 relative mx-4">
+        <button onclick="closeInquiryModal()" class="absolute top-6 left-6 text-gray-400 hover:text-red-500">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-emerald-600 text-2xl">
+                <i class="fa-solid fa-headset"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">درخواست مشاوره رایگان</h3>
+            <p class="text-gray-500 text-xs mt-2">شماره خود را وارد کنید تا با شما تماس بگیریم.</p>
+        </div>
+
+        <form action="{% url 'core:submit_inquiry' %}" method="POST" class="space-y-4">
+            {% csrf_token %}
+            <input type="text" name="phone_number" required placeholder="شماره موبایل" 
+                   class="w-full border border-gray-200 rounded-2xl py-4 px-6 text-center outline-none focus:border-emerald-500 transition-all">
+            <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-2xl shadow-lg">
+                ثبت درخواست تماس
+            </button>
+        </form>
+    </div>
+</div>
+<script>
+    function filterCards(key, element) {
+        // ۱. ریست کردن استایل تب‌ها
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active-tab', 'text-green-600', 'border-b-4', 'border-green-600', 'bg-white');
+            btn.classList.add('text-gray-400', 'bg-gray-50/50');
+        });
+        if(element) {
+            element.classList.add('active-tab', 'text-green-600', 'border-b-4', 'border-green-600', 'bg-white');
+            element.classList.remove('text-gray-400', 'bg-gray-50/50');
+        }
+
+        let insuranceCount = 0;
+
+        // ۲. فیلتر کردن کارت‌ها
+        document.querySelectorAll('.insurance-card').forEach(card => {
+            const category = (card.getAttribute('data-category') || "").trim();
+            
+            if (key === 'insurance') {
+                // نمایش بیمه‌ها (هر چیزی غیر از کالا و سرمایه‌گذاری) با محدودیت 8 عدد
+                if (category !== 'کالا و خدمات' && category !== 'سرمایه‌گذاری') {
+                    card.style.display = (insuranceCount < 9) ? 'flex' : 'none';
+                    insuranceCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            } else if (key === 'service') {
+                card.style.display = (category === 'کالا و خدمات') ? 'flex' : 'none';
+            } else if (key === 'investment') {
+                card.style.display = (category === 'سرمایه‌گذاری') ? 'flex' : 'none';
+            }
+        });
+
+        // ۳. مدیریت دکمه "مشاهده همه"
+        const moreBtn = document.getElementById('moreButtonContainer');
+        if(moreBtn) moreBtn.style.display = (key === 'insurance') ? 'block' : 'none';
+    }
+
+    // جستجوی لحظه‌ای در مودال
+    function filterInsurances() {
+        let input = document.getElementById('insuranceSearch').value.toLowerCase().trim();
+        let items = document.getElementsByClassName('insurance-item');
+        for (let i = 0; i < items.length; i++) {
+            let title = items[i].querySelector('span').innerText.toLowerCase();
+            items[i].style.display = title.includes(input) ? "flex" : "none";
+        }
+    }
+
+    function toggleModal() {
+        const modal = document.getElementById('insuranceModal');
+        modal.classList.toggle('hidden');
+        modal.classList.toggle('flex');
+    }
+
+    // لود اولیه روی تب بیمه
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstTab = document.querySelector('.tab-btn.active-tab');
+        if(firstTab) filterCards('insurance', firstTab);
+    });
+
+// ۱. فعال کردن باز و بسته شدن سوالات متداول
+    function toggleFAQ(id) {
+        const content = document.getElementById(`faq-${id}`);
+        const icon = document.getElementById(`icon-${id}`);
+        if (content) {
+            const isHidden = content.classList.contains('hidden');
+            if (isHidden) {
+                content.classList.remove('hidden');
+                if(icon) icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                if(icon) icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    }
+
+    // ۲. توابع باز و بسته کردن مودال ثبت خسارت
+    function openDamageModal() {
+        const modal = document.getElementById('damageModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    }
+    function closeDamageModal() {
+        const modal = document.getElementById('damageModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+
+    // ۴. توابع باز و بسته کردن مودال احراز هویت
+   function openAuthModal() {
+    const modal = document.getElementById('authModal');
+    modal.classList.replace('hidden', 'flex'); // جایگزینی هوشمند
+}
+
+    function closeAuthModal() {
+    const modal = document.getElementById('authModal');
+    modal.classList.replace('flex', 'hidden');
+}
+   function goToOtpStep() {
+    const mobile = document.getElementById('userMobile').value;
+    
+    if(mobile.length === 11) {
+        // ایجاد یک کد ۵ رقمی فیک
+        const fakeOtp = Math.floor(10000 + Math.random() * 90000);
+        
+        // ذخیره کد در یک متغیر سراسری یا در حافظه مرورگر برای مرحله بعد
+        window.currentOtp = fakeOtp;
+
+        // چاپ کد در کنسول برای اینکه خودت ببینی و وارد کنی
+        console.log("%c [ایمنو تِست] کد تایید شما: " + fakeOtp, "color: white; background: green; font-size: 20px; padding: 10px;");
+        
+        // شبیه‌سازی لودینگ کوتاه
+        alert("کد تایید (فیک) به کنسول مرورگر ارسال شد. (F12 را بزنید)");
+
+        // رفتن به مرحله بعد
+        document.getElementById('displayMobile').innerText = mobile;
+        document.getElementById('phoneStep').classList.add('hidden');
+        document.getElementById('otpStep').classList.remove('hidden');
+    } else {
+        alert('لطفا شماره موبایل را ۱۱ رقمی وارد کنید (مثلا 09123456789)');
+    }
+}
+
+function backToPhone() {
+    document.getElementById('phoneStep').classList.remove('hidden');
+    document.getElementById('otpStep').classList.add('hidden');
+}
+
+function verifyAndSubmit() {
+    // اینجا در آینده کد اتصال به بک‌اند را می‌نویسیم
+    alert('درخواست شما با موفقیت ثبت شد!');
+    closeAuthModal();
+}
+
+// باز و بسته کردن دراپ‌دان منوی کاربری
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) dropdown.classList.toggle('hidden');
+}
+
+// مرحله ۱: چک کردن شماره در دیتابیس
+async function checkUserStatus() {
+    const mobile = document.getElementById('userMobile').value;
+    if (mobile.length !== 11) {
+        alert("شماره موبایل باید ۱۱ رقم باشد.");
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/check-user/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ mobile: mobile })
+        });
+        const data = await response.json();
+
+        if (data.exists) {
+            // کاربر وجود دارد -> فقط مرحله ورود (رمز عبور) را نشان بده
+            showLoginStep(mobile);
+        } else {
+            // کاربر جدید -> فرم ثبت‌نام را نشان بده
+            showRegisterStep(mobile);
+        }
+    } catch (e) {
+        console.error("خطا در ارتباط با سرور");
+    }
+}
+
+function showRegisterStep(mobile) {
+    document.getElementById('phoneStep').classList.add('hidden');
+    document.getElementById('registerStep').classList.remove('hidden');
+    // ذخیره شماره در یک فیلد مخفی یا متغیر برای ارسال نهایی
+    window.tempMobile = mobile;
+}
+
+// این تابع اطلاعات ثبت‌نام را به جنگو می‌فرستد
+async function submitRegistration() {
+    const firstName = document.getElementById('regFirstName').value;
+    const lastName = document.getElementById('regLastName').value;
+    const password = document.getElementById('regPassword').value;
+    const confirm = document.getElementById('regConfirmPassword').value;
+
+    if (password !== confirm) {
+        alert("رمز عبور همخوانی ندارد.");
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/auth-user/', { // از آدرس جامع استفاده می‌کنیم
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                mobile: window.tempMobile,
+                first_name: firstName,
+                last_name: lastName,
+                password: password,
+                action: 'register' // اضافه کردن اکشن برای شفافیت
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            // به جای رفرش، به داشبورد برو
+            window.location.href = "/dashboard/"; 
+        } else {
+            alert(data.message || "خطا در ثبت‌نام");
+        }
+    } catch (e) {
+        console.error("خطا:", e);
+    }
+}
+function showLoginStep(mobile) {
+    const phoneStep = document.getElementById('phoneStep');
+    const loginStep = document.getElementById('loginStep');
+    const welcomeMobile = document.getElementById('welcomeMobile');
+
+    if (phoneStep) phoneStep.classList.add('hidden');
+    if (loginStep) {
+        loginStep.classList.remove('hidden');
+        if (welcomeMobile) welcomeMobile.innerText = mobile;
+    }
+    window.tempMobile = mobile;
+}
+
+// تابع جامع برای ارسال اطلاعات به بک‌اِند (چه ورود و چه ثبت‌نام)
+async function submitAuth(type) {
+    let payload = { mobile: window.tempMobile };
+    let apiUrl = '/api/auth-user/';
+
+    if (type === 'register') {
+        // ... (منطق گرفتن فیلدها مشابه بالا)
+        payload.first_name = document.getElementById('regFirstName').value;
+        payload.last_name = document.getElementById('regLastName').value;
+        payload.password = document.getElementById('regPassword').value;
+    } else {
+        payload.password = document.getElementById('loginPassword').value;
+    }
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            // هدایت مستقیم به داشبورد
+            window.location.href = "/dashboard/"; 
+        } else {
+            alert(data.message || "رمز عبور اشتباه است یا خطایی رخ داده.");
+        }
+    } catch (error) {
+        console.error("Auth Error:", error);
+        alert("ارتباط با سرور برقرار نشد.");
+    }
+}
+
+// بستن دراپ‌دان کاربر با کلیک روی فضای خالی صفحه
+window.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('userDropdown');
+    const userBtn = document.querySelector('button[onclick="toggleUserMenu()"]');
+    if (dropdown && !dropdown.contains(e.target) && userBtn && !userBtn.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
+// توابع باز و بسته کردن مودال مشاوره
+function openInquiryModal() {
+    const modal = document.getElementById('inquiryModal');
+    if(modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeInquiryModal() {
+    const modal = document.getElementById('inquiryModal');
+    if(modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+// توابع باز و بسته کردن مودال اعلام خسارت
+function openDamageModal() {
+    const modal = document.getElementById('damageModal');
+    if(modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function closeDamageModal() {
+    const modal = document.getElementById('damageModal');
+    if(modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+// بستن مودال‌ها با کلیک روی فضای خارج از پنجره
+window.onclick = function(event) {
+    const inquiryModal = document.getElementById('inquiryModal');
+    const damageModal = document.getElementById('damageModal');
+    if (event.target == inquiryModal) closeInquiryModal();
+    if (event.target == damageModal) closeDamageModal();
+}
+</script>
+{% endblock %}

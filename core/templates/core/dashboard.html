@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load humanize %} {% block content %}
+
+<div class="max-w-[1400px] mx-auto px-4 py-8" dir="rtl">
+    <div class="flex flex-col lg:flex-row gap-8">
+        
+        <div class="w-full lg:w-1/4 space-y-4">
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center">
+                <div class="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden border-4 border-white shadow-sm">
+                    <i class="fa-solid fa-user text-4xl text-gray-300"></i>
+                </div>
+                <h3 class="font-black text-gray-800 text-lg">{{ user.first_name|default:"کاربر ایمنو" }}</h3>
+                <a href="#" class="text-xs text-green-600 mt-2 inline-block hover:underline">اطلاعات شخصی <i class="fa-solid fa-angle-left text-[10px]"></i></a>
+                
+                <div class="mt-6 space-y-3 pt-6 border-t border-gray-50">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500 flex items-center gap-2"><i class="fa-solid fa-wallet text-green-600"></i> کیف پول</span>
+                        <span class="font-bold text-gray-800">{{ user.wallet_balance|default:"۰" }} تومان</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500 flex items-center gap-2"><i class="fa-solid fa-credit-card text-green-600"></i> اعتبار خرید</span>
+                        <span class="font-bold text-gray-800">۲۰,۰۰۰,۰۰۰ تومان</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 p-2">
+                <a href="{% url 'core:dashboard' %}" class="flex items-center justify-between p-4 text-green-600 bg-green-50 rounded-2xl group transition-all">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span class="text-sm font-bold">بیمه‌های من</span>
+                    </div>
+                    <i class="fa-solid fa-angle-left text-xs"></i>
+                </a>
+                
+                <a href="#" class="flex items-center justify-between p-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all group">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-clock-rotate-left opacity-40 group-hover:opacity-100 transition-opacity"></i>
+                        <span class="text-sm">در انتظار تمدید</span>
+                    </div>
+                    <i class="fa-solid fa-angle-left text-xs opacity-0 group-hover:opacity-100 transition-all"></i>
+                </a>
+
+                <a href="#" class="flex items-center justify-between p-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all group">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-circle-check opacity-40 group-hover:opacity-100 transition-opacity"></i>
+                        <span class="text-sm">بیمه‌های خریداری شده</span>
+                    </div>
+                    <i class="fa-solid fa-angle-left text-xs opacity-0 group-hover:opacity-100 transition-all"></i>
+                </a>
+
+                <a href="#" class="flex items-center justify-between p-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all group">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-rotate opacity-40 group-hover:opacity-100 transition-opacity"></i>
+                        <span class="text-sm">بیمه‌های ناتمام</span>
+                    </div>
+                    <i class="fa-solid fa-angle-left text-xs opacity-0 group-hover:opacity-100 transition-all"></i>
+                </a>
+
+                <a href="#" class="flex items-center justify-between p-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all group">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-id-card opacity-40 group-hover:opacity-100 transition-opacity"></i>
+                        <span class="text-sm">پلاک‌های من</span>
+                    </div>
+                    <i class="fa-solid fa-angle-left text-xs opacity-0 group-hover:opacity-100 transition-all"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="w-full lg:w-3/4 space-y-6">
+            
+            <div class="bg-linear-to-l from-green-50 to-indigo-100 rounded-[2.5rem] p-8 relative overflow-hidden flex items-center justify-between border border-green-100">
+                <div class="space-y-4 z-10 max-w-md">
+                    <h2 class="text-xl font-black text-green-900">با دعوت از دوستان خود، شارژ کیف پول دریافت کنید!</h2>
+                    <p class="text-sm text-green-700 leading-relaxed">ایمنو را به دوستانتان معرفی کنید؛ با اولین خریدشان، آن‌ها تخفیف می‌گیرند.</p>
+                    <div class="flex items-center gap-4 pt-2">
+                        <div class="bg-white px-4 py-2 rounded-xl border border-green-200 text-xs font-mono text-green-600">imeno-{{ user.id }}</div>
+                        <button class="bg-green-600 text-white px-6 py-2 rounded-xl text-xs font-bold shadow-lg shadow-green-200 hover:bg-green-700">کپی کردن</button>
+                    </div>
+                </div>
+                <img src="https://img.freepik.com/free-vector/hand-drawn-delivery-man-cartoon-illustration_23-2151125211.jpg" class="hidden md:block w-40 h-40 object-contain mix-blend-multiply opacity-80" alt="Invite">
+            </div>
+<div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+    <button onclick="toggleInstallments()" class="w-full p-5 flex items-center justify-between hover:bg-gray-50 transition-colors">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-file-invoice-dollar text-green-500 text-lg"></i>
+            </div>
+            <span class="font-bold text-gray-700">اقساط بیمه‌های من</span>
+        </div>
+        <i id="inst-arrow" class="fa-solid fa-angle-down text-gray-400 transition-transform"></i>
+    </button>
+    
+    <div id="installments-content" class="hidden border-t border-gray-50 p-6 bg-gray-50/30">
+        <div class="space-y-3">
+            {% for order in orders %}
+                {% if order.payment_type == 'installment' %}
+                    {% for inst in order.installments.all %}
+                        <div class="bg-white p-3 rounded-2xl flex justify-between items-center shadow-sm border border-gray-100">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[10px] w-fit {% if inst.is_paid %}text-green-600 bg-green-50{% else %}text-orange-600 bg-orange-50{% endif %} px-2 py-1 rounded-lg font-bold">
+                                    {% if inst.is_paid %}
+                                        <i class="fa-solid fa-check ml-1"></i>پرداخت شده
+                                    {% else %}
+                                        <i class="fa-solid fa-clock ml-1"></i>سررسید: {{ inst.due_date|date:"m/d" }}
+                                    {% endif %}
+                                </span>
+                                <span class="text-[9px] text-gray-400">قسط {{ forloop.counter }} - {{ order.company_name }}</span>
+                            </div>
+                            
+                            <div class="text-left flex flex-col items-end">
+                                <span class="text-xs font-black text-gray-800">{{ inst.amount|intcomma }} تومان</span>
+                                {% if not inst.is_paid %}
+                                    <button class="text-[9px] text-blue-600 font-bold mt-1">پرداخت سریع <i class="fa-solid fa-chevron-left text-[7px]"></i></button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% empty %}
+                <p class="text-center text-gray-400 text-xs py-4">هنوز هیچ سفارشی ثبت نکرده‌اید.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+            <div class="flex items-center justify-between">
+                <div class="bg-white rounded-2xl p-1.5 shadow-sm border border-gray-100 inline-flex gap-1">
+                    <button class="px-6 py-2 rounded-xl text-xs font-bold bg-green-600 text-white shadow-md">خریداری شده</button>
+                    <button class="px-6 py-2 rounded-xl text-xs font-bold text-gray-400 hover:bg-gray-50">در انتظار تمدید</button>
+                    <button class="px-6 py-2 rounded-xl text-xs font-bold text-gray-400 hover:bg-gray-50">بیمه‌های ناتمام</button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100 min-h-[300px]">
+                {% if orders %}
+                    <div class="grid gap-4">
+                        {% for order in orders %}
+                        <div class="flex items-center justify-between p-5 border border-gray-50 rounded-3xl hover:bg-gray-50 transition-all flex-row">
+                            <div class="text-left">
+                                <div class="font-black text-gray-800 text-sm">
+                                    {{ order.price|intcomma }} 
+                                    <span class="text-[10px] font-normal text-gray-500">تومان</span>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-[9px] font-bold mt-2 inline-block
+                                    {% if order.status == 'paid' %}bg-green-100 text-green-600{% else %}bg-yellow-100 text-yellow-600{% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-4 flex-row">
+                                <div class="text-right">
+                                    <h4 class="font-bold text-gray-800 text-sm">
+                                        {{ order.insurance.title }} 
+                                        <span class="text-blue-500 text-[11px]">({{ order.company_name|default:"ایمنو" }})</span>
+                                    </h4>
+                                    <div class="flex items-center justify-end gap-2 mt-1">
+                                        <span class="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded italic" dir="ltr">
+                                            {{ order.plate_number|default:"---" }}
+                                        </span>
+                                        <p class="text-[10px] text-gray-400">پلاک ماشین:</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 relative shadow-sm border border-green-100">
+                                    <i class="fa-solid fa-shield-check text-2xl"></i>
+                                    {% if order.payment_type == 'installment' %}
+                                        <div class="absolute -top-2 -right-2 bg-blue-600 text-white text-[8px] px-1.5 py-0.5 rounded-lg border-2 border-white shadow-sm">قسطی</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="flex flex-col items-center justify-center py-12 space-y-4">
+                        <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center">
+                            <i class="fa-solid fa-box-open text-4xl text-gray-200"></i>
+                        </div>
+                        <p class="text-gray-400 text-sm font-medium">هنوز هیچ بیمه‌ای خریداری نکرده‌اید.</p>
+                        <p class="text-gray-400 text-xs">(اگر خرید کرده‌اید و اینجا خالی است، دیتابیس را چک کنید)</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleInstallments() {
+        const content = document.getElementById('installments-content');
+        const arrow = document.getElementById('inst-arrow');
+        content.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+    }
+</script>
+{% endblock %}
