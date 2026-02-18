@@ -58,34 +58,6 @@ python manage.py runserver
 
 ---
 
-## 🐳 Run with Docker (PostgreSQL)
-
-### Build & Start
-
-```bash
-docker compose up --build
-```
-
-### Run Migrations
-
-```bash
-docker compose exec web python manage.py migrate
-```
-
-### Create Superuser
-
-```bash
-docker compose exec web python manage.py createsuperuser
-```
-
-Application will be available at:
-
-```
-http://localhost:8000
-```
-
----
-
 ## 🧪 Run Tests
 
 Locally:
@@ -145,48 +117,6 @@ Workflow file:
 
 ---
 
-## 📂 Project Structure
-
-```
-core/
- ├── models.py
- ├── views.py
- ├── services/
- │    ├── pricing_service.py
- │    └── order_service.py
- ├── tests.py
-imeno/
- ├── settings.py
-docker-compose.yml
-Dockerfile
-.github/
- └── workflows/
-     └── tests.yml
-screenshots/
- ├── 1.png
- ├── 2.png
- ├── 3.png
- ├── 4.png
- ├── 5.png
-```
-
----
-
-## 🔐 Environment Variables
-
-Create a `.env` file:
-
-```
-DEBUG=1
-SECRET_KEY=your-secret-key
-POSTGRES_DB=imeno
-POSTGRES_USER=imeno
-POSTGRES_PASSWORD=your-password
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-```
-
----
 
 ## 📈 What This Project Demonstrates
 
@@ -200,19 +130,6 @@ POSTGRES_PORT=5432
 - REST-style API endpoint design
 
 ---
-
-## 📌 Resume Highlights
-
-- Designed and implemented a dynamic insurance pricing engine.
-- Refactored business logic into a service layer for improved maintainability.
-- Implemented installment scheduling logic with automated due-date generation.
-- Dockerized the application with PostgreSQL using Docker Compose.
-- Wrote unit tests for pricing and installment functionality.
-- Configured GitHub Actions for automated CI test execution.
-- Built custom mobile-based authentication system.
-
----
-
 ## 👩‍💻 Author
 
 Fatemeh Nazari  
